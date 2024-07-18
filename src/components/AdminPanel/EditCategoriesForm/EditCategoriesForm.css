@@ -1,0 +1,21 @@
+.edit-categories-form {
+    margin-top: 20px;
+  }
+  
+  .edit-categories-form .MuiTypography-h5 {
+    margin-bottom: 20px;
+  }
+  
+  .edit-categories-form .MuiButton-containedPrimary {
+    margin-bottom: 20px;
+  }
+  
+  .edit-categories-form .MuiListItem-root {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .edit-categories-form .MuiIconButton-root {
+    margin-left: 10px;
+  }
+  

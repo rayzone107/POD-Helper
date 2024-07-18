@@ -1,26 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Toolbar from './components/common/Toolbar';
+import AdminPage from './pages/AdminPage';
+import HomePage from './pages/HomePage';
+import MockupPage from './pages/MockupPage';
+import PricingPage from './pages/PricingPage';
+import CreateTypePage from './pages/CreateTypePage';
+import EditTypePage from './pages/EditTypePage';
+import EditCategoriesPage from './pages/EditCategoriesPage';
+import { CssBaseline, Container } from '@mui/material';
+import { styled } from '@mui/system';
 
-function App() {
+const ToolbarOffset = styled('div')({
+  height: '64px', // Manually setting the height
+});
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <CssBaseline />
+      <Toolbar />
+      <ToolbarOffset />
+      <Container>
+        <Routes>
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/mockup" element={<MockupPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/create-type" element={<CreateTypePage />} />
+          <Route path="/edit-type" element={<EditTypePage />} />
+          <Route path="/edit-categories" element={<EditCategoriesPage />} />
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </Container>
+    </Router>
   );
-}
+};
 
 export default App;

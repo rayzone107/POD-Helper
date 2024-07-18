@@ -1,0 +1,14 @@
+.edit-type-form {
+    padding: var(--app-padding);
+  }
+  
+  .edit-type-form-title {
+    margin-bottom: 20px;
+  }
+  
+  .edit-type-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  

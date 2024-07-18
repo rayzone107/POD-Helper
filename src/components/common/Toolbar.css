@@ -1,0 +1,13 @@
+.toolbar-title {
+    flex-grow: 1;
+    text-decoration: none;
+    color: inherit;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .toolbar-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  

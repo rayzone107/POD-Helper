@@ -1,0 +1,14 @@
+.create-type-form {
+    padding: var(--app-padding);
+  }
+  
+  .create-type-form-title {
+    margin-bottom: 20px;
+  }
+  
+  .create-type-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  

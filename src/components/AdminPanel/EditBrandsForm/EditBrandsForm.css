@@ -1,0 +1,25 @@
+.edit-brands-form {
+    margin-top: 20px;
+  }
+  
+  .edit-brands-form .MuiTypography-h5 {
+    margin-bottom: 20px;
+  }
+  
+  .edit-brands-form .MuiFormControl-root {
+    margin-bottom: 20px;
+  }
+  
+  .edit-brands-form .MuiButton-containedPrimary {
+    margin-bottom: 20px;
+  }
+  
+  .edit-brands-form .MuiListItem-root {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .edit-brands-form .MuiIconButton-root {
+    margin-left: 10px;
+  }
+  
