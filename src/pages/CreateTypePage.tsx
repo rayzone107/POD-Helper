@@ -2,10 +2,14 @@ import React from 'react';
 import { Container } from '@mui/material';
 import CreateTypeForm from '../components/AdminPanel/CreateTypeForm/CreateTypeForm';
 
-const CreateTypePage: React.FC = () => {
+interface CreateTypePageProps {
+  mode: 'create' | 'edit';
+}
+
+const CreateTypePage: React.FC<CreateTypePageProps> = ({ mode }) => {
   return (
     <Container>
-      <CreateTypeForm />
+      <CreateTypeForm mode={mode} />
     </Container>
   );
 };

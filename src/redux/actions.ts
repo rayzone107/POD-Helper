@@ -2,8 +2,8 @@ import { AppThunk, AppThunkDispatch } from './store';
 import { setCategories, addCategory as addCategoryAction, updateCategory as updateCategoryAction, deleteCategory as deleteCategoryAction } from './slices/categoriesSlice';
 import { setBrands, addBrand as addBrandAction, updateBrand as updateBrandAction, deleteBrand as deleteBrandAction } from './slices/brandsSlice';
 import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore } from '../services/firestoreService';
-import { Category, Brand } from '../types';
-import { db, collection, doc, setDoc, deleteDoc } from '../services/firebaseConfig';
+import { Category, Brand, Type } from '../types';
+import { db, collection, doc, setDoc, deleteDoc, getDoc } from '../services/firebaseConfig';
 
 export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch) => {
   const categories: Category[] = await fetchCategoriesFromFirestore();
@@ -35,6 +35,7 @@ export const deleteCategory = (id: string): AppThunk => async (dispatch: AppThun
 };
 
 export const addBrand = (brand: Brand): AppThunk => async (dispatch: AppThunkDispatch) => {
+  console.log('Action adding brand:', brand);
   const brandRef = doc(collection(db, 'brands'));
   await setDoc(brandRef, { name: brand.name, categoryId: brand.categoryId });
   brand.id = brandRef.id;
@@ -51,4 +52,16 @@ export const deleteBrand = (id: string): AppThunk => async (dispatch: AppThunkDi
   const brandRef = doc(db, 'brands', id);
   await deleteDoc(brandRef);
   dispatch(deleteBrandAction(id));
+};
+
+export const fetchTypeById = (id: string): AppThunk<Promise<Type>> => async (dispatch: AppThunkDispatch) => {
+  const typeRef = doc(db, 'types', id);
+  const docSnapshot = await getDoc(typeRef);
+  return { id: docSnapshot.id, ...docSnapshot.data() } as Type;
+};
+
+export const saveType = (type: Type): AppThunk => async (dispatch: AppThunkDispatch) => {
+  const typeRef = doc(db, 'types', type.id);
+  await setDoc(typeRef, type);
+  // Dispatch appropriate actions if needed, e.g., adding or updating types in the state
 };

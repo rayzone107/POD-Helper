@@ -17,6 +17,7 @@ const brandsSlice = createSlice({
       state.brands = action.payload;
     },
     addBrand(state, action: PayloadAction<Brand>) {
+      console.log('Reducer adding brand:', action.payload);
       state.brands.push(action.payload);
     },
     updateBrand(state, action: PayloadAction<Brand>) {

@@ -1,12 +1,12 @@
-.edit-type-form {
+.size-variant-dialog {
     padding: var(--app-padding);
   }
   
-  .edit-type-form-title {
+  .size-variant-dialog-title {
     margin-bottom: 20px;
   }
   
-  .edit-type-form form {
+  .size-variant-dialog form {
     display: flex;
     flex-direction: column;
     gap: 20px;

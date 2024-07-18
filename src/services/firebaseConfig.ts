@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, enableIndexedDbPersistence, query, where, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, enableIndexedDbPersistence, query, where, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -19,4 +19,4 @@ enableIndexedDbPersistence(db);
 
 const storage = getStorage(app);
 
-export { db, storage, collection, getDocs, query, where, doc, setDoc, deleteDoc };
+export { db, storage, collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc };

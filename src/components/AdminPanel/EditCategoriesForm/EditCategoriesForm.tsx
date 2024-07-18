@@ -7,12 +7,15 @@ import { Category } from '../../../types';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SimpleInputDialog from '../../common/SimpleInputDialog/SimpleInputDialog';
+import AlertDialog from '../../common/AlertDialog/AlertDialog';
 import './EditCategoriesForm.css';
 
 const EditCategoriesForm: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
   const categories = useSelector((state: RootState) => state.categories.categories);
   const dispatch = useDispatch<AppDispatch>();
@@ -21,15 +24,15 @@ const EditCategoriesForm: React.FC = () => {
     dispatch(fetchCategories()); // Fetch categories when the component mounts
   }, [dispatch]);
 
-  const handleAddCategory = () => {
-    dispatch(addCategory({ id: '', name: newCategoryName }));
+  const handleAddCategory = (categoryName: string) => {
+    dispatch(addCategory({ id: '', name: categoryName }));
     setNewCategoryName('');
     setOpen(false);
   };
 
-  const handleUpdateCategory = () => {
+  const handleUpdateCategory = (categoryName: string) => {
     if (editingCategory) {
-      dispatch(updateCategory({ ...editingCategory, name: newCategoryName }));
+      dispatch(updateCategory({ ...editingCategory, name: categoryName }));
       setEditingCategory(null);
       setNewCategoryName('');
       setOpen(false);
@@ -38,16 +41,18 @@ const EditCategoriesForm: React.FC = () => {
 
   const handleSave = (value: string) => {
     if (editingCategory) {
-      setNewCategoryName(value);
-      handleUpdateCategory();
+      handleUpdateCategory(value);
     } else {
-      setNewCategoryName(value);
-      handleAddCategory();
+      handleAddCategory(value);
     }
   };
 
-  const handleDeleteCategory = (id: string) => {
-    dispatch(deleteCategory(id));
+  const handleDeleteCategory = () => {
+    if (categoryToDelete) {
+      dispatch(deleteCategory(categoryToDelete));
+      setCategoryToDelete(null);
+      setAlertOpen(false);
+    }
   };
 
   const openDialog = (category: Category | null = null) => {
@@ -62,6 +67,16 @@ const EditCategoriesForm: React.FC = () => {
     setEditingCategory(null);
     setNewCategoryName('');
     setOpen(false);
+  };
+
+  const openAlertDialog = (id: string) => {
+    setCategoryToDelete(id);
+    setAlertOpen(true);
+  };
+
+  const closeAlertDialog = () => {
+    setCategoryToDelete(null);
+    setAlertOpen(false);
   };
 
   return (
@@ -79,7 +94,7 @@ const EditCategoriesForm: React.FC = () => {
             <IconButton edge="end" aria-label="edit" onClick={() => openDialog(category)}>
               <EditIcon />
             </IconButton>
-            <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteCategory(category.id)}>
+            <IconButton edge="end" aria-label="delete" onClick={() => openAlertDialog(category.id)}>
               <DeleteIcon />
             </IconButton>
           </ListItem>
@@ -95,6 +110,16 @@ const EditCategoriesForm: React.FC = () => {
         initialValue={newCategoryName}
         onPositive={handleSave}
         onNegative={closeDialog}
+      />
+
+      <AlertDialog
+        open={alertOpen}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this category?"
+        positiveButtonText="Delete"
+        negativeButtonText="Cancel"
+        onConfirm={handleDeleteCategory}
+        onCancel={closeAlertDialog}
       />
     </Container>
   );

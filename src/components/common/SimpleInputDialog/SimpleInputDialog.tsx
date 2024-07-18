@@ -33,10 +33,16 @@ const SimpleInputDialog: React.FC<SimpleInputDialogProps> = ({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
+      console.log('Dialog positive button pressed:', value);
       onPositive(value);
     } else if (event.key === 'Escape') {
       onNegative();
     }
+  };
+
+  const handlePositiveClick = () => {
+    console.log('Dialog positive button clicked:', value);
+    onPositive(value);
   };
 
   return (
@@ -56,7 +62,7 @@ const SimpleInputDialog: React.FC<SimpleInputDialogProps> = ({
         <Button onClick={onNegative} color="primary">
           {negativeButtonText}
         </Button>
-        <Button onClick={() => onPositive(value)} color="primary">
+        <Button onClick={handlePositiveClick} color="primary">
           {positiveButtonText}
         </Button>
       </DialogActions>

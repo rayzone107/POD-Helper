@@ -7,6 +7,7 @@ import { Category, Brand } from '../../../types';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SimpleInputDialog from '../../common/SimpleInputDialog/SimpleInputDialog';
+import AlertDialog from '../../common/AlertDialog/AlertDialog';
 import './EditBrandsForm.css';
 
 const EditBrandsForm: React.FC = () => {
@@ -14,6 +15,8 @@ const EditBrandsForm: React.FC = () => {
   const [newBrandName, setNewBrandName] = useState('');
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [brandToDelete, setBrandToDelete] = useState<string | null>(null);
 
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
@@ -25,15 +28,17 @@ const EditBrandsForm: React.FC = () => {
     }
   }, [selectedCategoryId, dispatch]);
 
-  const handleAddBrand = () => {
-    dispatch(addBrand({ id: '', name: newBrandName, categoryId: selectedCategoryId }));
+  const handleAddBrand = (brandName: string) => {
+    console.log('Adding brand:', brandName);
+    dispatch(addBrand({ id: '', name: brandName, categoryId: selectedCategoryId }));
     setNewBrandName('');
     setOpen(false);
   };
 
-  const handleUpdateBrand = () => {
+  const handleUpdateBrand = (brandName: string) => {
     if (editingBrand) {
-      dispatch(updateBrand({ ...editingBrand, name: newBrandName }));
+      console.log('Updating brand:', brandName);
+      dispatch(updateBrand({ ...editingBrand, name: brandName }));
       setEditingBrand(null);
       setNewBrandName('');
       setOpen(false);
@@ -41,17 +46,20 @@ const EditBrandsForm: React.FC = () => {
   };
 
   const handleSave = (value: string) => {
+    console.log('Received value from dialog:', value);
     if (editingBrand) {
-      setNewBrandName(value);
-      handleUpdateBrand();
+      handleUpdateBrand(value);
     } else {
-      setNewBrandName(value);
-      handleAddBrand();
+      handleAddBrand(value);
     }
   };
 
-  const handleDeleteBrand = (id: string) => {
-    dispatch(deleteBrand(id));
+  const handleDeleteBrand = () => {
+    if (brandToDelete) {
+      dispatch(deleteBrand(brandToDelete));
+      setBrandToDelete(null);
+      setAlertOpen(false);
+    }
   };
 
   const openDialog = (brand: Brand | null = null) => {
@@ -66,6 +74,16 @@ const EditBrandsForm: React.FC = () => {
     setEditingBrand(null);
     setNewBrandName('');
     setOpen(false);
+  };
+
+  const openAlertDialog = (id: string) => {
+    setBrandToDelete(id);
+    setAlertOpen(true);
+  };
+
+  const closeAlertDialog = () => {
+    setBrandToDelete(null);
+    setAlertOpen(false);
   };
 
   return (
@@ -93,7 +111,7 @@ const EditBrandsForm: React.FC = () => {
             <IconButton edge="end" aria-label="edit" onClick={() => openDialog(brand)}>
               <EditIcon />
             </IconButton>
-            <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteBrand(brand.id)}>
+            <IconButton edge="end" aria-label="delete" onClick={() => openAlertDialog(brand.id)}>
               <DeleteIcon />
             </IconButton>
           </ListItem>
@@ -109,6 +127,16 @@ const EditBrandsForm: React.FC = () => {
         initialValue={newBrandName}
         onPositive={handleSave}
         onNegative={closeDialog}
+      />
+
+      <AlertDialog
+        open={alertOpen}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this brand?"
+        positiveButtonText="Delete"
+        negativeButtonText="Cancel"
+        onConfirm={handleDeleteBrand}
+        onCancel={closeAlertDialog}
       />
     </Container>
   );
