@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText, IconButton, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Container, Typography, Button, List, ListItem, ListItemText, IconButton, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
 import { fetchBrands, addBrand, updateBrand, deleteBrand } from '../../../redux/actions';
 import { Category, Brand } from '../../../types';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SimpleInputDialog from '../../common/SimpleInputDialog/SimpleInputDialog';
 import './EditBrandsForm.css';
 
 const EditBrandsForm: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [newBrandName, setNewBrandName] = useState('');
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
 
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
@@ -36,6 +37,16 @@ const EditBrandsForm: React.FC = () => {
       setEditingBrand(null);
       setNewBrandName('');
       setOpen(false);
+    }
+  };
+
+  const handleSave = (value: string) => {
+    if (editingBrand) {
+      setNewBrandName(value);
+      handleUpdateBrand();
+    } else {
+      setNewBrandName(value);
+      handleAddBrand();
     }
   };
 
@@ -89,27 +100,16 @@ const EditBrandsForm: React.FC = () => {
         ))}
       </List>
 
-      <Dialog open={open} onClose={closeDialog}>
-        <DialogTitle>{editingBrand ? 'Edit Brand' : 'Add Brand'}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Brand Name"
-            fullWidth
-            value={newBrandName}
-            onChange={(e) => setNewBrandName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={editingBrand ? handleUpdateBrand : handleAddBrand} color="primary">
-            {editingBrand ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SimpleInputDialog
+        open={open}
+        title={editingBrand ? 'Edit Brand' : 'Add Brand'}
+        fieldLabel="Brand Name"
+        positiveButtonText={editingBrand ? 'Update' : 'Add'}
+        negativeButtonText="Cancel"
+        initialValue={newBrandName}
+        onPositive={handleSave}
+        onNegative={closeDialog}
+      />
     </Container>
   );
 };

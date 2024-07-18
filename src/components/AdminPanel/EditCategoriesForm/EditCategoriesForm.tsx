@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
 import { fetchCategories, addCategory, updateCategory, deleteCategory } from '../../../redux/actions';
 import { Category } from '../../../types';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SimpleInputDialog from '../../common/SimpleInputDialog/SimpleInputDialog';
 import './EditCategoriesForm.css';
 
 const EditCategoriesForm: React.FC = () => {
@@ -15,6 +16,10 @@ const EditCategoriesForm: React.FC = () => {
 
   const categories = useSelector((state: RootState) => state.categories.categories);
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchCategories()); // Fetch categories when the component mounts
+  }, [dispatch]);
 
   const handleAddCategory = () => {
     dispatch(addCategory({ id: '', name: newCategoryName }));
@@ -28,6 +33,16 @@ const EditCategoriesForm: React.FC = () => {
       setEditingCategory(null);
       setNewCategoryName('');
       setOpen(false);
+    }
+  };
+
+  const handleSave = (value: string) => {
+    if (editingCategory) {
+      setNewCategoryName(value);
+      handleUpdateCategory();
+    } else {
+      setNewCategoryName(value);
+      handleAddCategory();
     }
   };
 
@@ -71,27 +86,16 @@ const EditCategoriesForm: React.FC = () => {
         ))}
       </List>
 
-      <Dialog open={open} onClose={closeDialog}>
-        <DialogTitle>{editingCategory ? 'Edit Category' : 'Add Category'}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Category Name"
-            fullWidth
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={editingCategory ? handleUpdateCategory : handleAddCategory} color="primary">
-            {editingCategory ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SimpleInputDialog
+        open={open}
+        title={editingCategory ? 'Edit Category' : 'Add Category'}
+        fieldLabel="Category Name"
+        positiveButtonText={editingCategory ? 'Update' : 'Add'}
+        negativeButtonText="Cancel"
+        initialValue={newCategoryName}
+        onPositive={handleSave}
+        onNegative={closeDialog}
+      />
     </Container>
   );
 };
