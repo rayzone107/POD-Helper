@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Button, IconButton } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Container, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
 import { fetchTypes, fetchCategories, fetchAllBrands, deleteType } from '../../redux/actions';
+import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 import AlertDialog from '../common/AlertDialog/AlertDialog';
 import './AdminPanel.css';
 
@@ -17,7 +18,9 @@ const AdminPanel: React.FC = () => {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [page, setPage] = useState<number>(0);
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [typeToDelete, setTypeToDelete] = useState<string | null>(null);
 
   useEffect(() => {
@@ -44,28 +47,28 @@ const AdminPanel: React.FC = () => {
     return brand ? brand.name : 'Unknown Brand';
   };
 
-  const handleDeleteClick = (typeId: string) => {
-    setTypeToDelete(typeId);
-    setDeleteDialogOpen(true);
+  const handleDelete = (id: string) => {
+    setTypeToDelete(id);
+    setAlertOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleConfirmDelete = () => {
     if (typeToDelete) {
       dispatch(deleteType(typeToDelete));
-      setTypeToDelete(null);
-      setDeleteDialogOpen(false);
     }
+    setAlertOpen(false);
+    setTypeToDelete(null);
   };
 
-  const handleDeleteCancel = () => {
+  const handleCancelDelete = () => {
+    setAlertOpen(false);
     setTypeToDelete(null);
-    setDeleteDialogOpen(false);
   };
 
   const columns: GridColDef[] = [
     { field: 'category', headerName: 'Category', width: 150 },
     { field: 'brand', headerName: 'Brand', width: 150 },
-    { field: 'name', headerName: 'Name', width: 150 },
+    { field: 'name', headerName: 'Name', width: 200 },
     { field: 'variantCount', headerName: 'Variant Count', width: 150 },
     {
       field: 'actions',
@@ -76,7 +79,7 @@ const AdminPanel: React.FC = () => {
           <IconButton onClick={() => navigate(`/edit-type/${params.row.id}`)}>
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => handleDeleteClick(params.row.id)}>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
         </>
@@ -84,13 +87,18 @@ const AdminPanel: React.FC = () => {
     },
   ];
 
-  const rows = types.map((type) => ({
+  const rows = types.map(type => ({
     id: type.id,
     category: getCategoryName(type.categoryId),
     brand: getBrandName(type.brandId),
     name: type.name,
     variantCount: type.colorVariants.length + type.sizeVariants.length,
   }));
+
+  const handlePaginationModelChange = (newModel: GridPaginationModel) => {
+    setPage(newModel.page);
+    setPageSize(newModel.pageSize);
+  };
 
   return (
     <Container className="admin-panel">
@@ -100,12 +108,14 @@ const AdminPanel: React.FC = () => {
       <Button variant="contained" color="primary" onClick={handleEditCategoriesAndBrands} style={{ marginBottom: '20px' }}>
         Edit Categories and Brands
       </Button>
-      <div style={{ height: 400, width: '100%' }}>
+      <div className="table-container">
         <DataGrid
           rows={rows}
           columns={columns}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
           pagination
-          paginationModel={{ pageSize: 5, page: 0 }}
+          paginationModel={{ pageSize, page }}
+          onPaginationModelChange={handlePaginationModelChange}
           checkboxSelection
         />
       </div>
@@ -115,13 +125,13 @@ const AdminPanel: React.FC = () => {
         </Button>
       </div>
       <AlertDialog
-        open={deleteDialogOpen}
+        open={alertOpen}
         title="Confirm Delete"
         message="Are you sure you want to delete this type?"
         positiveButtonText="Delete"
         negativeButtonText="Cancel"
-        onConfirm={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
       />
     </Container>
   );
