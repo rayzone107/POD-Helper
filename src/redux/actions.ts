@@ -4,7 +4,8 @@ import { setBrands, addBrand as addBrandAction, updateBrand as updateBrandAction
 import { setTypes, deleteType as deleteTypeAction } from './slices/typesSlice';
 import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchAllBrandsFromFirestore, fetchTypesFromFirestore } from '../services/firestoreService';
 import { Category, Brand, Type } from '../types';
-import { db, collection, doc, setDoc, deleteDoc, getDoc, ref, deleteObject, storage } from '../services/firebaseConfig';
+import { db, collection, doc, setDoc, deleteDoc, getDoc, storage } from '../services/firebaseConfig';
+import { ref, deleteObject } from 'firebase/storage';
 
 export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch) => {
   const categories: Category[] = await fetchCategoriesFromFirestore();
@@ -71,7 +72,7 @@ export const fetchTypeById = (id: string): AppThunk<Promise<Type>> => async (dis
   return { id: docSnapshot.id, ...docSnapshot.data() } as Type;
 };
 
-export const saveType = (type: Type): AppThunk => async (dispatch: AppThunkDispatch) => {
+export const saveType = (type: Type): AppThunk<Promise<void>> => async (dispatch: AppThunkDispatch) => {
   const typeRef = doc(db, 'types', type.id);
   await setDoc(typeRef, type);
 };

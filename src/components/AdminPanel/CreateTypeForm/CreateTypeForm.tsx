@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Container, Typography, TextField, Button, FormControl, InputLabel, Select, MenuItem, CircularProgress, Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
 import { fetchCategories, fetchBrands, saveType, fetchTypeById } from '../../../redux/actions';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './CreateTypeForm.css';
 
@@ -22,6 +22,7 @@ interface CreateTypeFormProps {
 
 const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   const categories = useSelector((state: RootState) => state.categories.categories);
@@ -50,6 +51,9 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
   const [openReplaceImageDialog, setOpenReplaceImageDialog] = useState(false);
   const [variantForImageReplacement, setVariantForImageReplacement] = useState<any | null>(null);
 
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   useEffect(() => {
     dispatch(fetchCategories());
     if (mode === 'edit' && id) {
@@ -73,6 +77,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
   }, [categoryId, dispatch]);
 
   const handleSave = async () => {
+    setSaving(true);
     const typeId = mode === 'edit' ? id! : uuidv4(); // Generate unique ID for new type or use existing ID for edit
 
     const updatedColorVariants = colorVariants.map((variant) => ({
@@ -110,7 +115,15 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
         colorVariants: updatedColorVariantsWithUrls,
         sizeVariants: updatedSizeVariants,
       })
-    );
+    ).then(() => {
+      setSaving(false);
+      setSuccess(true);
+      if (mode === 'create') {
+        setTimeout(() => {
+          navigate('/admin');
+        }, 2000); // Navigate to admin page after 2 seconds
+      }
+    });
   };
 
   const handleEditColorVariant = (variant: any) => {
@@ -182,10 +195,15 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
       <Typography variant="h5" component="h2" className="create-type-form-title">
         {mode === 'edit' ? 'Edit Type' : 'Create Type'}
       </Typography>
+      {saving && (
+        <div className="saving-overlay">
+          <CircularProgress />
+        </div>
+      )}
       <form>
         <FormControl fullWidth margin="normal">
           <InputLabel>Category</InputLabel>
-          <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+          <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} disabled={saving}>
             {categories.map((category) => (
               <MenuItem key={category.id} value={category.id}>
                 {category.name}
@@ -194,7 +212,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           </Select>
         </FormControl>
 
-        <FormControl fullWidth margin="normal" disabled={!categoryId}>
+        <FormControl fullWidth margin="normal" disabled={!categoryId || saving}>
           <InputLabel>Brand</InputLabel>
           <Select value={brandId} onChange={(e) => setBrandId(e.target.value)}>
             {brands
@@ -214,6 +232,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          disabled={saving}
         />
 
         <ColorVariantList
@@ -241,7 +260,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           setBoundingOverlayBoxDimensions={setBoundingOverlayBoxDimensions}
         />
 
-        <Button variant="contained" color="primary" onClick={handleSave}>
+        <Button variant="contained" color="primary" onClick={handleSave} disabled={saving}>
           Save
         </Button>
       </form>
@@ -264,6 +283,11 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
         onClose={() => setOpenReplaceImageDialog(false)}
         onSave={handleSaveImage}
       />
+      <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Alert onClose={() => setSuccess(false)} severity="success">
+          Type saved successfully!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
