@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Button, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
-import { fetchTypes, fetchCategories, fetchAllBrands } from '../../redux/actions';
+import { fetchTypes, fetchCategories, fetchAllBrands, deleteType } from '../../redux/actions';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AlertDialog from '../common/AlertDialog/AlertDialog';
 import './AdminPanel.css';
 
 const AdminPanel: React.FC = () => {
@@ -14,6 +15,9 @@ const AdminPanel: React.FC = () => {
   const types = useSelector((state: RootState) => state.types.types);
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
+  
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [typeToDelete, setTypeToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchTypes());
@@ -37,6 +41,24 @@ const AdminPanel: React.FC = () => {
   const getBrandName = (brandId: string) => {
     const brand = brands.find(brand => brand.id === brandId);
     return brand ? brand.name : 'Unknown Brand';
+  };
+
+  const handleDeleteClick = (typeId: string) => {
+    setTypeToDelete(typeId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (typeToDelete) {
+      dispatch(deleteType(typeToDelete));
+      setTypeToDelete(null);
+      setDeleteDialogOpen(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setTypeToDelete(null);
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -74,7 +96,7 @@ const AdminPanel: React.FC = () => {
                     <IconButton onClick={() => navigate(`/edit-type/${type.id}`)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton>
+                    <IconButton onClick={() => handleDeleteClick(type.id)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
@@ -89,6 +111,15 @@ const AdminPanel: React.FC = () => {
           Add Type
         </Button>
       </div>
+      <AlertDialog
+        open={deleteDialogOpen}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this type?"
+        positiveButtonText="Delete"
+        negativeButtonText="Cancel"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </Container>
   );
 };

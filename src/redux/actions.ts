@@ -1,10 +1,10 @@
 import { AppThunk, AppThunkDispatch } from './store';
 import { setCategories, addCategory as addCategoryAction, updateCategory as updateCategoryAction, deleteCategory as deleteCategoryAction } from './slices/categoriesSlice';
 import { setBrands, addBrand as addBrandAction, updateBrand as updateBrandAction, deleteBrand as deleteBrandAction } from './slices/brandsSlice';
-import { setTypes } from './slices/typesSlice';
+import { setTypes, deleteType as deleteTypeAction } from './slices/typesSlice';
 import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchAllBrandsFromFirestore, fetchTypesFromFirestore } from '../services/firestoreService';
 import { Category, Brand, Type } from '../types';
-import { db, collection, doc, setDoc, deleteDoc, getDoc } from '../services/firebaseConfig';
+import { db, collection, doc, setDoc, deleteDoc, getDoc, ref, deleteObject, storage } from '../services/firebaseConfig';
 
 export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch) => {
   const categories: Category[] = await fetchCategoriesFromFirestore();
@@ -74,5 +74,18 @@ export const fetchTypeById = (id: string): AppThunk<Promise<Type>> => async (dis
 export const saveType = (type: Type): AppThunk => async (dispatch: AppThunkDispatch) => {
   const typeRef = doc(db, 'types', type.id);
   await setDoc(typeRef, type);
-  // Dispatch appropriate actions if needed, e.g., adding or updating types in the state
+};
+
+export const deleteType = (id: string): AppThunk => async (dispatch: AppThunkDispatch) => {
+  const typeRef = doc(db, 'types', id);
+  const typeSnapshot = await getDoc(typeRef);
+  const typeData = typeSnapshot.data();
+
+  if (typeData) {
+    const storageRefs = typeData.colorVariants.map((variant: any) => ref(storage, `types/${id}/variants/${variant.id}`));
+    await Promise.all(storageRefs.map((storageRef: any) => deleteObject(storageRef)));
+  }
+
+  await deleteDoc(typeRef);
+  dispatch(deleteTypeAction(id));
 };
