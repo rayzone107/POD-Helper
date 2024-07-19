@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Button, IconButton } from '@mui/material';
+import { Container, Typography, Button, IconButton } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
@@ -15,7 +16,7 @@ const AdminPanel: React.FC = () => {
   const types = useSelector((state: RootState) => state.types.types);
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
-  
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [typeToDelete, setTypeToDelete] = useState<string | null>(null);
 
@@ -61,6 +62,36 @@ const AdminPanel: React.FC = () => {
     setDeleteDialogOpen(false);
   };
 
+  const columns: GridColDef[] = [
+    { field: 'category', headerName: 'Category', width: 150 },
+    { field: 'brand', headerName: 'Brand', width: 150 },
+    { field: 'name', headerName: 'Name', width: 150 },
+    { field: 'variantCount', headerName: 'Variant Count', width: 150 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (params) => (
+        <>
+          <IconButton onClick={() => navigate(`/edit-type/${params.row.id}`)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDeleteClick(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
+
+  const rows = types.map((type) => ({
+    id: type.id,
+    category: getCategoryName(type.categoryId),
+    brand: getBrandName(type.brandId),
+    name: type.name,
+    variantCount: type.colorVariants.length + type.sizeVariants.length,
+  }));
+
   return (
     <Container className="admin-panel">
       <Typography variant="h4" component="h1" className="admin-panel-title">
@@ -69,42 +100,14 @@ const AdminPanel: React.FC = () => {
       <Button variant="contained" color="primary" onClick={handleEditCategoriesAndBrands} style={{ marginBottom: '20px' }}>
         Edit Categories and Brands
       </Button>
-      <div className="table-container">
-        <Table>
-          <TableHead className="table-header">
-            <TableRow>
-              <TableCell>Category</TableCell>
-              <TableCell>Brand</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Variant Count</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {types.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">No data yet</TableCell>
-              </TableRow>
-            ) : (
-              types.map((type) => (
-                <TableRow key={type.id}>
-                  <TableCell>{getCategoryName(type.categoryId)}</TableCell>
-                  <TableCell>{getBrandName(type.brandId)}</TableCell>
-                  <TableCell>{type.name}</TableCell>
-                  <TableCell>{type.colorVariants.length + type.sizeVariants.length}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => navigate(`/edit-type/${type.id}`)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteClick(type.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pagination
+          paginationModel={{ pageSize: 5, page: 0 }}
+          checkboxSelection
+        />
       </div>
       <div className="add-type-button">
         <Button variant="contained" color="primary" onClick={handleAddType}>
