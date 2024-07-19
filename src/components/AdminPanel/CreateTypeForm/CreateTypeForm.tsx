@@ -5,13 +5,14 @@ import { RootState, AppDispatch } from '../../../redux/store';
 import { fetchCategories, fetchBrands, saveType, fetchTypeById } from '../../../redux/actions';
 import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import './CreateTypeForm.css';
+
 import ColorVariantList from './ColorVariantList/ColorVariantList';
 import SizeVariantList from './SizeVariantList/SizeVariantList';
+import PrimaryVariant from './PrimaryVariant/PrimaryVariant';
 import ColorVariantDialog from './ColorVariantList/ColorVariantDialog/ColorVariantDialog';
 import SizeVariantDialog from './SizeVariantList/SizeVariantDialog/SizeVariantDialog';
-import PrimaryVariant from './PrimaryVariant/PrimaryVariant';
-import { ColorVariant, SizeVariant } from '../../../types';
-import './CreateTypeForm.css';
+import ReplaceImageDialog from './ColorVariantList/ReplaceImageDialog/ReplaceImageDialog';
 
 interface CreateTypeFormProps {
   mode: 'create' | 'edit';
@@ -27,8 +28,8 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [brandId, setBrandId] = useState('');
-  const [colorVariants, setColorVariants] = useState<ColorVariant[]>([]);
-  const [sizeVariants, setSizeVariants] = useState<SizeVariant[]>([]);
+  const [colorVariants, setColorVariants] = useState<any[]>([]);
+  const [sizeVariants, setSizeVariants] = useState<any[]>([]);
   const [primaryLightVariant, setPrimaryLightVariant] = useState('');
   const [primaryDarkVariant, setPrimaryDarkVariant] = useState('');
   const [boundingOverlayBoxDimensions, setBoundingOverlayBoxDimensions] = useState({
@@ -39,9 +40,13 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
   });
 
   const [openColorVariantDialog, setOpenColorVariantDialog] = useState(false);
+  const [editingColorVariant, setEditingColorVariant] = useState<any | null>(null);
+
   const [openSizeVariantDialog, setOpenSizeVariantDialog] = useState(false);
-  const [editingColorVariant, setEditingColorVariant] = useState<ColorVariant | null>(null);
-  const [editingSizeVariant, setEditingSizeVariant] = useState<SizeVariant | null>(null);
+  const [editingSizeVariant, setEditingSizeVariant] = useState<any | null>(null);
+
+  const [openReplaceImageDialog, setOpenReplaceImageDialog] = useState(false);
+  const [variantForImageReplacement, setVariantForImageReplacement] = useState<any | null>(null);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -93,50 +98,73 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
     );
   };
 
+  const handleEditColorVariant = (variant: any) => {
+    setEditingColorVariant(variant);
+    setOpenColorVariantDialog(true);
+  };
+
+  const handleDeleteColorVariant = (id: string) => {
+    setColorVariants(colorVariants.filter((variant) => variant.id !== id));
+  };
+
+  const handleSaveColorVariant = (variant: any) => {
+    if (editingColorVariant) {
+      // Update existing variant
+      setColorVariants(colorVariants.map((v) => (v.id === editingColorVariant.id ? variant : v)));
+    } else {
+      // Add new variant
+      setColorVariants([...colorVariants, { ...variant, id: uuidv4() }]);
+    }
+    setOpenColorVariantDialog(false);
+  };
+
   const handleAddColorVariant = () => {
     setEditingColorVariant(null);
     setOpenColorVariantDialog(true);
   };
 
-  const handleEditColorVariant = (variant: ColorVariant) => {
-    setEditingColorVariant(variant);
-    setOpenColorVariantDialog(true);
+  const handleReplaceImage = (variant: any) => {
+    setVariantForImageReplacement(variant);
+    setOpenReplaceImageDialog(true);
   };
 
-  const handleSaveColorVariant = (variant: ColorVariant) => {
-    setColorVariants((prevVariants) =>
-      editingColorVariant
-        ? prevVariants.map((v) => (v.id === variant.id ? variant : v))
-        : [...prevVariants, variant]
-    );
-    setOpenColorVariantDialog(false);
+  const handleSaveImage = (file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const imageUrl = reader.result as string;
+      setColorVariants((prevVariants) =>
+        prevVariants.map((variant) =>
+          variant.id === variantForImageReplacement.id ? { ...variant, imageUrl } : variant
+        )
+      );
+      setOpenReplaceImageDialog(false);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleDeleteColorVariant = (id: string) => {
-    setColorVariants((prevVariants) => prevVariants.filter((v) => v.id !== id));
+  const handleEditSizeVariant = (variant: any) => {
+    setEditingSizeVariant(variant);
+    setOpenSizeVariantDialog(true);
+  };
+
+  const handleDeleteSizeVariant = (id: string) => {
+    setSizeVariants(sizeVariants.filter((variant) => variant.id !== id));
+  };
+
+  const handleSaveSizeVariant = (variant: any) => {
+    if (editingSizeVariant) {
+      // Update existing variant
+      setSizeVariants(sizeVariants.map((v) => (v.id === editingSizeVariant.id ? variant : v)));
+    } else {
+      // Add new variant
+      setSizeVariants([...sizeVariants, { ...variant, id: uuidv4() }]);
+    }
+    setOpenSizeVariantDialog(false);
   };
 
   const handleAddSizeVariant = () => {
     setEditingSizeVariant(null);
     setOpenSizeVariantDialog(true);
-  };
-
-  const handleEditSizeVariant = (variant: SizeVariant) => {
-    setEditingSizeVariant(variant);
-    setOpenSizeVariantDialog(true);
-  };
-
-  const handleSaveSizeVariant = (variant: SizeVariant) => {
-    setSizeVariants((prevVariants) =>
-      editingSizeVariant
-        ? prevVariants.map((v) => (v.id === variant.id ? variant : v))
-        : [...prevVariants, variant]
-    );
-    setOpenSizeVariantDialog(false);
-  };
-
-  const handleDeleteSizeVariant = (id: string) => {
-    setSizeVariants((prevVariants) => prevVariants.filter((v) => v.id !== id));
   };
 
   return (
@@ -182,19 +210,16 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           colorVariants={colorVariants}
           onEdit={handleEditColorVariant}
           onDelete={handleDeleteColorVariant}
+          onReplaceImage={handleReplaceImage}
+          onAdd={handleAddColorVariant}
         />
-        <Button variant="contained" color="primary" onClick={handleAddColorVariant}>
-          Add Color Variant
-        </Button>
 
         <SizeVariantList
           sizeVariants={sizeVariants}
           onEdit={handleEditSizeVariant}
           onDelete={handleDeleteSizeVariant}
+          onAdd={handleAddSizeVariant}
         />
-        <Button variant="contained" color="primary" onClick={handleAddSizeVariant}>
-          Add Size Variant
-        </Button>
 
         <PrimaryVariant
           colorVariants={colorVariants}
@@ -202,66 +227,8 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           primaryDarkVariant={primaryDarkVariant}
           setPrimaryLightVariant={setPrimaryLightVariant}
           setPrimaryDarkVariant={setPrimaryDarkVariant}
-        />
-
-        <Typography variant="h6" component="h3" className="create-type-form-title">
-          Bounding Overlay Box Dimensions
-        </Typography>
-        <TextField
-          label="Start X"
-          type="number"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={boundingOverlayBoxDimensions.startX}
-          onChange={(e) =>
-            setBoundingOverlayBoxDimensions((prev) => ({
-              ...prev,
-              startX: parseInt(e.target.value, 10),
-            }))
-          }
-        />
-        <TextField
-          label="End X"
-          type="number"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={boundingOverlayBoxDimensions.endX}
-          onChange={(e) =>
-            setBoundingOverlayBoxDimensions((prev) => ({
-              ...prev,
-              endX: parseInt(e.target.value, 10),
-            }))
-          }
-        />
-        <TextField
-          label="Start Y"
-          type="number"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={boundingOverlayBoxDimensions.startY}
-          onChange={(e) =>
-            setBoundingOverlayBoxDimensions((prev) => ({
-              ...prev,
-              startY: parseInt(e.target.value, 10),
-            }))
-          }
-        />
-        <TextField
-          label="End Y"
-          type="number"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={boundingOverlayBoxDimensions.endY}
-          onChange={(e) =>
-            setBoundingOverlayBoxDimensions((prev) => ({
-              ...prev,
-              endY: parseInt(e.target.value, 10),
-            }))
-          }
+          boundingOverlayBoxDimensions={boundingOverlayBoxDimensions}
+          setBoundingOverlayBoxDimensions={setBoundingOverlayBoxDimensions}
         />
 
         <Button variant="contained" color="primary" onClick={handleSave}>
@@ -280,6 +247,12 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
         variant={editingSizeVariant}
         onClose={() => setOpenSizeVariantDialog(false)}
         onSave={handleSaveSizeVariant}
+      />
+      <ReplaceImageDialog
+        open={openReplaceImageDialog}
+        variantName={variantForImageReplacement?.name || ''}
+        onClose={() => setOpenReplaceImageDialog(false)}
+        onSave={handleSaveImage}
       />
     </Container>
   );

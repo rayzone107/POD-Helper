@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
-import { ColorVariant } from '../../../../../types';
-import { ChromePicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import './ColorVariantDialog.css';
+import { ColorVariant } from '../../../../../types';
 
 interface ColorVariantDialogProps {
   open: boolean;
@@ -11,54 +11,36 @@ interface ColorVariantDialogProps {
   onSave: (variant: ColorVariant) => void;
 }
 
-const ColorVariantDialog: React.FC<ColorVariantDialogProps> = ({
-  open,
-  variant,
-  onClose,
-  onSave
-}) => {
+const ColorVariantDialog: React.FC<ColorVariantDialogProps> = ({ open, variant, onClose, onSave }) => {
   const [name, setName] = useState('');
-  const [hexColorCode, setHexColorCode] = useState('');
+  const [hexColorCode, setHexColorCode] = useState('#000000');
 
   useEffect(() => {
     if (variant) {
       setName(variant.name);
       setHexColorCode(variant.hexColorCode);
+    } else {
+      setName('');
+      setHexColorCode('#000000');
     }
   }, [variant]);
 
   const handleSave = () => {
-    if (variant) {
-      onSave({
-        ...variant,
-        name,
-        hexColorCode,
-      });
-    } else {
-      onSave({
-        id: '',
-        name,
-        hexColorCode,
-        imageUrl: '',
-        imageFile: null,
-      });
-    }
-    onClose();
+    onSave({ id: variant ? variant.id : '', name, hexColorCode });
   };
 
   return (
-    <Dialog open={open} onClose={onClose} className="color-variant-dialog">
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>{variant ? 'Edit Color Variant' : 'Add Color Variant'}</DialogTitle>
       <DialogContent>
         <TextField
           label="Name"
-          variant="outlined"
-          fullWidth
-          margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          fullWidth
+          margin="normal"
         />
-        <ChromePicker
+        <SketchPicker
           color={hexColorCode}
           onChangeComplete={(color) => setHexColorCode(color.hex)}
         />
