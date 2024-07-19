@@ -2,12 +2,14 @@ import { configureStore, ThunkAction, Action, ThunkDispatch } from '@reduxjs/too
 import itemsReducer from './slices/itemsSlice';
 import categoriesReducer from './slices/categoriesSlice';
 import brandsReducer from './slices/brandsSlice';
+import typesReducer from './slices/typesSlice';
 
 const store = configureStore({
   reducer: {
     items: itemsReducer,
     categories: categoriesReducer,
     brands: brandsReducer,
+    types: typesReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

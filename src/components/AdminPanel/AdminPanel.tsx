@@ -1,13 +1,20 @@
-import React from 'react';
+// AdminPanel.tsx
+import React, { useEffect } from 'react';
 import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../redux/store';
+import { fetchTypes } from '../../redux/actions';
 import './AdminPanel.css';
 
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
-  const items = useSelector((state: RootState) => state.items.items);
+  const dispatch = useDispatch<AppDispatch>();
+  const types = useSelector((state: RootState) => state.types.types);
+
+  useEffect(() => {
+    dispatch(fetchTypes()); // Fetch types when the component mounts
+  }, [dispatch]);
 
   const handleAddType = () => {
     navigate('/create-type');
@@ -36,15 +43,15 @@ const AdminPanel: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.length === 0 ? (
+            {types.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} align="center">No data yet</TableCell>
               </TableRow>
             ) : (
-              items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.variantCount}</TableCell>
+              types.map((type) => (
+                <TableRow key={type.id}>
+                  <TableCell>{type.name}</TableCell>
+                  <TableCell>{type.colorVariants.length + type.sizeVariants.length}</TableCell>
                   <TableCell>
                     {/* Add Edit functionality later */}
                   </TableCell>

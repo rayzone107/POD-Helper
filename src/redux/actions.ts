@@ -1,7 +1,9 @@
+// actions.ts
 import { AppThunk, AppThunkDispatch } from './store';
 import { setCategories, addCategory as addCategoryAction, updateCategory as updateCategoryAction, deleteCategory as deleteCategoryAction } from './slices/categoriesSlice';
 import { setBrands, addBrand as addBrandAction, updateBrand as updateBrandAction, deleteBrand as deleteBrandAction } from './slices/brandsSlice';
-import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore } from '../services/firestoreService';
+import { setTypes } from './slices/typesSlice';
+import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchTypesFromFirestore } from '../services/firestoreService';
 import { Category, Brand, Type } from '../types';
 import { db, collection, doc, setDoc, deleteDoc, getDoc } from '../services/firebaseConfig';
 
@@ -13,6 +15,11 @@ export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch
 export const fetchBrands = (categoryId: string): AppThunk => async (dispatch: AppThunkDispatch) => {
   const brands: Brand[] = await fetchBrandsFromFirestore(categoryId);
   dispatch(setBrands(brands));
+};
+
+export const fetchTypes = (): AppThunk => async (dispatch: AppThunkDispatch) => {
+  const types: Type[] = await fetchTypesFromFirestore();
+  dispatch(setTypes(types));
 };
 
 export const addCategory = (category: Category): AppThunk => async (dispatch: AppThunkDispatch) => {

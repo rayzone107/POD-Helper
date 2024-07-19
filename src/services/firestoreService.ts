@@ -1,5 +1,5 @@
 import { db, collection, getDocs, query, where } from './firebaseConfig';
-import { Category, Brand } from '../types';
+import { Category, Brand, Type } from '../types';
 
 interface CategoryDoc {
   name: string;
@@ -30,4 +30,14 @@ export const fetchBrandsFromFirestore = async (categoryId: string): Promise<Bran
     categoryId: (doc.data() as BrandDoc).categoryId,
   }));
   return brands;
+};
+
+export const fetchTypesFromFirestore = async (): Promise<Type[]> => {
+  const typesCollection = collection(db, 'types');
+  const typesSnapshot = await getDocs(typesCollection);
+  const types: Type[] = typesSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  })) as Type[];
+  return types;
 };

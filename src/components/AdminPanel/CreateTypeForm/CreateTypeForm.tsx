@@ -13,6 +13,8 @@ import PrimaryVariant from './PrimaryVariant/PrimaryVariant';
 import ColorVariantDialog from './ColorVariantList/ColorVariantDialog/ColorVariantDialog';
 import SizeVariantDialog from './SizeVariantList/SizeVariantDialog/SizeVariantDialog';
 import ReplaceImageDialog from './ColorVariantList/ReplaceImageDialog/ReplaceImageDialog';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../../../services/firebaseConfig';
 
 interface CreateTypeFormProps {
   mode: 'create' | 'edit';
@@ -83,6 +85,19 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
       id: variant.id || uuidv4(),
     }));
 
+    // Upload images and get URLs
+    const uploadImage = async (variant: any) => {
+      if (variant.imageFile) {
+        const storageRef = ref(storage, `types/${typeId}/variants/${variant.id}`);
+        await uploadBytes(storageRef, variant.imageFile);
+        const imageUrl = await getDownloadURL(storageRef);
+        return { ...variant, imageUrl, imageFile: null };
+      }
+      return variant;
+    };
+
+    const updatedColorVariantsWithUrls = await Promise.all(updatedColorVariants.map(uploadImage));
+
     dispatch(
       saveType({
         id: typeId,
@@ -92,7 +107,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
         primaryLightVariant,
         primaryDarkVariant,
         boundingOverlayBoxDimensions,
-        colorVariants: updatedColorVariants,
+        colorVariants: updatedColorVariantsWithUrls,
         sizeVariants: updatedSizeVariants,
       })
     );
@@ -129,17 +144,12 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
   };
 
   const handleSaveImage = (file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const imageUrl = reader.result as string;
-      setColorVariants((prevVariants) =>
-        prevVariants.map((variant) =>
-          variant.id === variantForImageReplacement.id ? { ...variant, imageUrl } : variant
-        )
-      );
-      setOpenReplaceImageDialog(false);
-    };
-    reader.readAsDataURL(file);
+    setColorVariants((prevVariants) =>
+      prevVariants.map((variant) =>
+        variant.id === variantForImageReplacement.id ? { ...variant, imageFile: file, imageUrl: URL.createObjectURL(file) } : variant
+      )
+    );
+    setOpenReplaceImageDialog(false);
   };
 
   const handleEditSizeVariant = (variant: any) => {

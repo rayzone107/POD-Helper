@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, enableIndexedDbPersistence, query, where, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA5Yv97_XhL1pOHiYSJPM8jBeAoRXhSFnE",
@@ -19,4 +19,4 @@ enableIndexedDbPersistence(db);
 
 const storage = getStorage(app);
 
-export { db, storage, collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc };
+export { db, storage, collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc, ref, uploadBytes, getDownloadURL };
