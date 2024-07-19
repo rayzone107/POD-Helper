@@ -1,19 +1,24 @@
-// AdminPanel.tsx
 import React, { useEffect } from 'react';
-import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Button } from '@mui/material';
+import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Button, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
-import { fetchTypes } from '../../redux/actions';
+import { fetchTypes, fetchCategories, fetchAllBrands } from '../../redux/actions';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './AdminPanel.css';
 
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const types = useSelector((state: RootState) => state.types.types);
+  const categories = useSelector((state: RootState) => state.categories.categories);
+  const brands = useSelector((state: RootState) => state.brands.brands);
 
   useEffect(() => {
-    dispatch(fetchTypes()); // Fetch types when the component mounts
+    dispatch(fetchTypes());
+    dispatch(fetchCategories());
+    dispatch(fetchAllBrands());
   }, [dispatch]);
 
   const handleAddType = () => {
@@ -22,6 +27,16 @@ const AdminPanel: React.FC = () => {
 
   const handleEditCategoriesAndBrands = () => {
     navigate('/edit-categories');
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Unknown Category';
+  };
+
+  const getBrandName = (brandId: string) => {
+    const brand = brands.find(brand => brand.id === brandId);
+    return brand ? brand.name : 'Unknown Brand';
   };
 
   return (
@@ -36,27 +51,32 @@ const AdminPanel: React.FC = () => {
         <Table>
           <TableHead className="table-header">
             <TableRow>
+              <TableCell>Category</TableCell>
+              <TableCell>Brand</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Variant Count</TableCell>
-              <TableCell>Edit</TableCell>
-              <TableCell>Delete</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {types.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">No data yet</TableCell>
+                <TableCell colSpan={5} align="center">No data yet</TableCell>
               </TableRow>
             ) : (
               types.map((type) => (
                 <TableRow key={type.id}>
+                  <TableCell>{getCategoryName(type.categoryId)}</TableCell>
+                  <TableCell>{getBrandName(type.brandId)}</TableCell>
                   <TableCell>{type.name}</TableCell>
                   <TableCell>{type.colorVariants.length + type.sizeVariants.length}</TableCell>
                   <TableCell>
-                    {/* Add Edit functionality later */}
-                  </TableCell>
-                  <TableCell>
-                    {/* Add Delete functionality later */}
+                    <IconButton onClick={() => navigate(`/edit-type/${type.id}`)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))

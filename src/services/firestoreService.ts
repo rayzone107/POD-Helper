@@ -32,6 +32,17 @@ export const fetchBrandsFromFirestore = async (categoryId: string): Promise<Bran
   return brands;
 };
 
+export const fetchAllBrandsFromFirestore = async (): Promise<Brand[]> => {
+  const brandsCollection = collection(db, 'brands');
+  const brandsSnapshot = await getDocs(brandsCollection);
+  const brands: Brand[] = brandsSnapshot.docs.map(doc => ({
+    id: doc.id,
+    name: (doc.data() as BrandDoc).name,
+    categoryId: (doc.data() as BrandDoc).categoryId,
+  }));
+  return brands;
+};
+
 export const fetchTypesFromFirestore = async (): Promise<Type[]> => {
   const typesCollection = collection(db, 'types');
   const typesSnapshot = await getDocs(typesCollection);
