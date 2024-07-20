@@ -2,10 +2,11 @@ import { AppThunk, AppThunkDispatch } from './store';
 import { setCategories, addCategory as addCategoryAction, updateCategory as updateCategoryAction, deleteCategory as deleteCategoryAction } from './slices/categoriesSlice';
 import { setBrands, addBrand as addBrandAction, updateBrand as updateBrandAction, deleteBrand as deleteBrandAction } from './slices/brandsSlice';
 import { setTypes, deleteType as deleteTypeAction } from './slices/typesSlice';
+import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercentage, setRunAdsOnEtsy, setDiscountPercentageEtsy, setDiscountPercentageShopify, setEtsyPrices, setShopifyPrices } from './slices/pricingCalculatorSlice';
 import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchAllBrandsFromFirestore, fetchTypesFromFirestore } from '../services/firestoreService';
 import { Category, Brand, Type } from '../types';
-import { db, collection, doc, setDoc, deleteDoc, getDoc, storage } from '../services/firebaseConfig';
-import { ref, deleteObject } from 'firebase/storage';
+import { db, collection, doc, setDoc, deleteDoc, getDoc, ref, deleteObject, storage } from '../services/firebaseConfig';
+import { calculateEtsyPrice, calculateShopifyPrice } from '../services/pricingCalculatorService';
 
 export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch) => {
   const categories: Category[] = await fetchCategoriesFromFirestore();
@@ -89,4 +90,37 @@ export const deleteType = (id: string): AppThunk => async (dispatch: AppThunkDis
 
   await deleteDoc(typeRef);
   dispatch(deleteTypeAction(id));
+};
+
+export const calculatePrices = (): AppThunk => async (dispatch, getState) => {
+  const state = getState();
+  const {
+    selectedType,
+    profitPercentage,
+    runAdsOnEtsy,
+    discountPercentageEtsy,
+    discountPercentageShopify,
+  } = state.pricingCalculator;
+
+  if (!selectedType) return;
+
+  const etsyPrices: Record<string, number> = {};
+  const shopifyPrices: Record<string, number> = {};
+
+  selectedType.sizeVariants.forEach((variant) => {
+    etsyPrices[variant.name] = calculateEtsyPrice(
+      variant.price,
+      profitPercentage,
+      runAdsOnEtsy,
+      discountPercentageEtsy
+    );
+    shopifyPrices[variant.name] = calculateShopifyPrice(
+      variant.price,
+      profitPercentage,
+      discountPercentageShopify
+    );
+  });
+
+  dispatch(setEtsyPrices(etsyPrices));
+  dispatch(setShopifyPrices(shopifyPrices));
 };

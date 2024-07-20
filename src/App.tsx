@@ -7,6 +7,7 @@ import MockupPage from './pages/MockupPage';
 import PricingPage from './pages/PricingPage';
 import CreateTypePage from './pages/CreateTypePage';
 import EditCategoriesPage from './pages/EditCategoriesPage';
+import PricingCalculatorPage from './pages/PricingCalculatorPage';
 import { CssBaseline, Container } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -25,6 +26,7 @@ const App: React.FC = () => {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/mockup" element={<MockupPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/pricing-calculator" element={<PricingCalculatorPage />} />
           <Route path="/create-type" element={<CreateTypePage mode="create" />} />
           <Route path="/edit-type/:id" element={<CreateTypePage mode="edit" />} />
           <Route path="/edit-categories" element={<EditCategoriesPage />} />

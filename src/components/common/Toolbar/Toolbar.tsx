@@ -16,7 +16,7 @@ const Toolbar: React.FC = () => {
         <Link to="/admin" className="toolbar-link">
           <Button color="inherit" startIcon={<DashboardIcon />}>Admin Panel</Button>
         </Link>
-        <Link to="/pricing" className="toolbar-link">
+        <Link to="/pricing-calculator" className="toolbar-link">
           <Button color="inherit" startIcon={<AttachMoneyIcon />}>Pricing Calculator</Button>
         </Link>
         <Link to="/mockup" className="toolbar-link">

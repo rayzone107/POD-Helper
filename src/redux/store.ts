@@ -3,6 +3,7 @@ import itemsReducer from './slices/itemsSlice';
 import categoriesReducer from './slices/categoriesSlice';
 import brandsReducer from './slices/brandsSlice';
 import typesReducer from './slices/typesSlice';
+import pricingCalculatorReducer from './slices/pricingCalculatorSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     categories: categoriesReducer,
     brands: brandsReducer,
     types: typesReducer,
+    pricingCalculator: pricingCalculatorReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
