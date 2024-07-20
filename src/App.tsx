@@ -10,6 +10,7 @@ import EditCategoriesPage from './pages/EditCategoriesPage';
 import PricingCalculatorPage from './pages/PricingCalculatorPage';
 import { CssBaseline, Container } from '@mui/material';
 import { styled } from '@mui/system';
+import MockupGeneratorPage from './pages/MockupGeneratorPage';
 
 const ToolbarOffset = styled('div')({
   height: '64px', // Manually setting the height
@@ -27,6 +28,7 @@ const App: React.FC = () => {
           <Route path="/mockup" element={<MockupPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/pricing-calculator" element={<PricingCalculatorPage />} />
+          <Route path="/mockup-generator" element={<MockupGeneratorPage />} />
           <Route path="/create-type" element={<CreateTypePage mode="create" />} />
           <Route path="/edit-type/:id" element={<CreateTypePage mode="edit" />} />
           <Route path="/edit-categories" element={<EditCategoriesPage />} />

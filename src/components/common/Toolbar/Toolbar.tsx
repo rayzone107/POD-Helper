@@ -19,7 +19,7 @@ const Toolbar: React.FC = () => {
         <Link to="/pricing-calculator" className="toolbar-link">
           <Button color="inherit" startIcon={<AttachMoneyIcon />}>Pricing Calculator</Button>
         </Link>
-        <Link to="/mockup" className="toolbar-link">
+        <Link to="/mockup-generator" className="toolbar-link">
           <Button color="inherit" startIcon={<ImageIcon />}>Mockup Generator</Button>
         </Link>
       </MuiToolbar>

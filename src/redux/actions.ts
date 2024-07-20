@@ -7,6 +7,7 @@ import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchAllBrandsF
 import { Category, Brand, Type, PricingInfo } from '../types';
 import { db, collection, doc, setDoc, deleteDoc, getDoc, ref, deleteObject, storage } from '../services/firebaseConfig';
 import { calculateEtsyPrice, calculateShopifyPrice, calculateEtsyPriceWithoutProfit, calculateShopifyPriceWithoutProfit } from '../services/pricingCalculatorService';
+import { setMockupSelectedCategory, setMockupSelectedBrand, setMockupSelectedType, setMockupLightVariantOverlay, setMockupDarkVariantOverlay, setMockupOverlayPosition, setMockupSelectedColorVariants } from './slices/mockupGeneratorSlice';
 
 export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch) => {
   const categories: Category[] = await fetchCategoriesFromFirestore();
@@ -115,4 +116,33 @@ export const calculatePrices = (): AppThunk => (dispatch, getState) => {
     dispatch(setEtsyPrices(etsyPrices));
     dispatch(setShopifyPrices(shopifyPrices));
   }
+};
+
+// Mockup Generator Actions
+export const setMockupSelectedCategoryAction = (category: string): AppThunk => (dispatch) => {
+  dispatch(setMockupSelectedCategory(category));
+};
+
+export const setMockupSelectedBrandAction = (brand: string): AppThunk => (dispatch) => {
+  dispatch(setMockupSelectedBrand(brand));
+};
+
+export const setMockupSelectedTypeAction = (type: Type | null): AppThunk => (dispatch) => {
+  dispatch(setMockupSelectedType(type));
+};
+
+export const setLightOverlay = (file: File | null): AppThunk => (dispatch) => {
+  dispatch(setMockupLightVariantOverlay(file));
+};
+
+export const setDarkOverlay = (file: File | null): AppThunk => (dispatch) => {
+  dispatch(setMockupDarkVariantOverlay(file));
+};
+
+export const setOverlayPos = (position: { x: number; y: number; width: number; height: number }): AppThunk => (dispatch) => {
+  dispatch(setMockupOverlayPosition(position));
+};
+
+export const setSelectedColorVars = (variants: string[]): AppThunk => (dispatch) => {
+  dispatch(setMockupSelectedColorVariants(variants));
 };

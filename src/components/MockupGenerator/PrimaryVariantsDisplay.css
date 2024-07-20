@@ -1,0 +1,35 @@
+.primary-variants-display {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .variant-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .variant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  
+  .variant-image {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .overlay-box {
+    position: absolute;
+    border: 2px solid red;
+    box-sizing: border-box;
+  }
+  
+  .overlay-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  

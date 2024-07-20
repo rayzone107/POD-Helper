@@ -4,6 +4,7 @@ import categoriesReducer from './slices/categoriesSlice';
 import brandsReducer from './slices/brandsSlice';
 import typesReducer from './slices/typesSlice';
 import pricingCalculatorReducer from './slices/pricingCalculatorSlice';
+import mockupGeneratorReducer from './slices/mockupGeneratorSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     brands: brandsReducer,
     types: typesReducer,
     pricingCalculator: pricingCalculatorReducer,
+    mockupGenerator: mockupGeneratorReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
