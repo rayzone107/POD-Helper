@@ -52,6 +52,15 @@ const PrimaryVariantsDisplay: React.FC = () => {
     };
   };
 
+  const getOverlayImageStyles = () => {
+    const { width, height } = getOverlayStyles();
+    return {
+      width: width ? `${width}px` : undefined,
+      height: height ? `${height}px` : undefined,
+      objectFit: 'contain' as 'contain',
+    };
+  };
+
   return (
     <div className="primary-variants-display">
       <Typography variant="h6" gutterBottom>
@@ -66,14 +75,36 @@ const PrimaryVariantsDisplay: React.FC = () => {
             ) : (
               <Typography>No Image</Typography>
             )}
-            <div className="overlay-box" style={getOverlayStyles()}>
+            <Rnd
+              bounds="parent"
+              size={{ width: overlayPosition.width, height: overlayPosition.height }}
+              position={{ x: overlayPosition.x, y: overlayPosition.y }}
+              onDragStop={(e, d) => {
+                dispatch(setMockupOverlayPosition({ x: d.x, y: d.y, width: overlayPosition.width, height: overlayPosition.height }));
+              }}
+              onResizeStop={(e, direction, ref, delta, position) => {
+                dispatch(setMockupOverlayPosition({
+                  x: position.x,
+                  y: position.y,
+                  width: ref.offsetWidth,
+                  height: ref.offsetHeight,
+                }));
+              }}
+              resizeHandleStyles={{
+                top: { display: 'none' },
+                right: { display: 'none' },
+                bottom: { display: 'none' },
+                left: { display: 'none' },
+                topRight: { width: '10px', height: '10px', backgroundColor: 'red' },
+                bottomRight: { width: '10px', height: '10px', backgroundColor: 'red' },
+                bottomLeft: { width: '10px', height: '10px', backgroundColor: 'red' },
+                topLeft: { width: '10px', height: '10px', backgroundColor: 'red' },
+              }}
+            >
               {lightVariantOverlay && (
-                <img src={URL.createObjectURL(lightVariantOverlay)} alt="Overlay" className="overlay-image" />
+                <img src={URL.createObjectURL(lightVariantOverlay)} alt="Overlay" className="overlay-image" style={getOverlayImageStyles()} />
               )}
-              {!lightVariantOverlay && (
-                <div className="red-box" />
-              )}
-            </div>
+            </Rnd>
           </div>
           <input
             type="file"
@@ -96,14 +127,36 @@ const PrimaryVariantsDisplay: React.FC = () => {
             ) : (
               <Typography>No Image</Typography>
             )}
-            <div className="overlay-box" style={getOverlayStyles()}>
+            <Rnd
+              bounds="parent"
+              size={{ width: overlayPosition.width, height: overlayPosition.height }}
+              position={{ x: overlayPosition.x, y: overlayPosition.y }}
+              onDragStop={(e, d) => {
+                dispatch(setMockupOverlayPosition({ x: d.x, y: d.y, width: overlayPosition.width, height: overlayPosition.height }));
+              }}
+              onResizeStop={(e, direction, ref, delta, position) => {
+                dispatch(setMockupOverlayPosition({
+                  x: position.x,
+                  y: position.y,
+                  width: ref.offsetWidth,
+                  height: ref.offsetHeight,
+                }));
+              }}
+              resizeHandleStyles={{
+                top: { display: 'none' },
+                right: { display: 'none' },
+                bottom: { display: 'none' },
+                left: { display: 'none' },
+                topRight: { width: '10px', height: '10px', backgroundColor: 'red' },
+                bottomRight: { width: '10px', height: '10px', backgroundColor: 'red' },
+                bottomLeft: { width: '10px', height: '10px', backgroundColor: 'red' },
+                topLeft: { width: '10px', height: '10px', backgroundColor: 'red' },
+              }}
+            >
               {darkVariantOverlay && (
-                <img src={URL.createObjectURL(darkVariantOverlay)} alt="Overlay" className="overlay-image" />
+                <img src={URL.createObjectURL(darkVariantOverlay)} alt="Overlay" className="overlay-image" style={getOverlayImageStyles()} />
               )}
-              {!darkVariantOverlay && (
-                <div className="red-box" />
-              )}
-            </div>
+            </Rnd>
           </div>
           <input
             type="file"
