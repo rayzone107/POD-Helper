@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '../../redux/store';
 import { Button, Typography } from '@mui/material';
-import { generateMockups } from '../../services/mockupGeneratorService';
 import './GenerateMockups.css';
 
 const GenerateMockups: React.FC = () => {
@@ -13,9 +13,19 @@ const GenerateMockups: React.FC = () => {
   const darkVariantOverlay = useSelector((state: RootState) => state.mockupGenerator.darkVariantOverlay);
   const overlayPosition = useSelector((state: RootState) => state.mockupGenerator.overlayPosition);
 
-  const handleGenerateMockups = async () => {
+  const navigate = useNavigate();
+
+  const handleGenerateMockups = () => {
+    console.log('Selected Type:', selectedType);
+    console.log('Selected Color Variants:', selectedColorVariants);
+    console.log('Light Variant Overlay:', lightVariantOverlay);
+    console.log('Dark Variant Overlay:', darkVariantOverlay);
+    console.log('Overlay Position:', overlayPosition);
+
     if (selectedType && lightVariantOverlay && darkVariantOverlay) {
-      await generateMockups(selectedType, selectedColorVariants, lightVariantOverlay, darkVariantOverlay, overlayPosition);
+      navigate('/generated-mockups');
+    } else {
+      console.error('Required data not available to generate mockups.');
     }
   };
 

@@ -20,17 +20,29 @@ export const generateMockups = async (
       const canvas = createCanvas(600, 600);
       const ctx = canvas.getContext('2d');
 
-      const primaryImage = await loadImage(primaryVariantImage);
-      ctx.drawImage(primaryImage, 0, 0, 600, 600);
+      try {
+        const primaryImage = await loadImage(primaryVariantImage);
+        ctx.drawImage(primaryImage, 0, 0, 600, 600);
+      } catch (error) {
+        console.error(`Failed to load the primary variant image for ${variant.name}`, error);
+        throw error;
+      }
 
-      const overlay = await loadImage(URL.createObjectURL(overlayImage));
-      ctx.drawImage(
-        overlay,
-        overlayPosition.x * 6,
-        overlayPosition.y * 6,
-        overlayPosition.width * 6,
-        overlayPosition.height * 6
-      );
+      try {
+        const overlayUrl = URL.createObjectURL(overlayImage);
+        const overlay = await loadImage(overlayUrl);
+        ctx.drawImage(
+          overlay,
+          overlayPosition.x * 6,
+          overlayPosition.y * 6,
+          overlayPosition.width * 6,
+          overlayPosition.height * 6
+        );
+        URL.revokeObjectURL(overlayUrl); // Clean up the object URL
+      } catch (error) {
+        console.error(`Failed to load the overlay image for ${variant.name}`, error);
+        throw error;
+      }
 
       ctx.font = 'bold 20px Arial';
       ctx.fillStyle = 'black';

@@ -15,7 +15,10 @@ const store = configureStore({
     pricingCalculator: pricingCalculatorReducer,
     mockupGenerator: mockupGeneratorReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Disable the serializable check middleware
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
