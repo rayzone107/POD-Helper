@@ -6,7 +6,7 @@ import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercen
 import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchAllBrandsFromFirestore, fetchTypesFromFirestore } from '../services/firestoreService';
 import { Category, Brand, Type, PricingInfo } from '../types';
 import { db, collection, doc, setDoc, deleteDoc, getDoc, ref, deleteObject, storage } from '../services/firebaseConfig';
-import { calculateEtsyPrice, calculateShopifyPrice } from '../services/pricingCalculatorService';
+import { calculateEtsyPrice, calculateShopifyPrice, calculateEtsyPriceWithoutProfit, calculateShopifyPriceWithoutProfit } from '../services/pricingCalculatorService';
 
 export const fetchCategories = (): AppThunk => async (dispatch: AppThunkDispatch) => {
   const categories: Category[] = await fetchCategoriesFromFirestore();
@@ -99,6 +99,13 @@ export const calculatePrices = (): AppThunk => (dispatch, getState) => {
   if (selectedType) {
     const etsyPrices: Record<string, PricingInfo> = {};
     const shopifyPrices: Record<string, PricingInfo> = {};
+
+    // Find the cheapest variant
+    const cheapestVariant = selectedType.sizeVariants.reduce((prev, curr) => (prev.price < curr.price ? prev : curr));
+
+    // Calculate 0% profit price for the cheapest variant
+    etsyPrices['0% profit option'] = calculateEtsyPriceWithoutProfit(cheapestVariant.price, discountPercentageEtsy, runAdsOnEtsy);
+    shopifyPrices['0% profit option'] = calculateShopifyPriceWithoutProfit(cheapestVariant.price, discountPercentageShopify);
 
     selectedType.sizeVariants.forEach(variant => {
       etsyPrices[variant.name] = calculateEtsyPrice(variant.price, profitPercentage, discountPercentageEtsy, runAdsOnEtsy);
