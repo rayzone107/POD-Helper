@@ -38,6 +38,7 @@ export interface ColorVariant {
   hexColorCode: string;
   imageUrl?: string;
   imageFile?: File | null;
+  isDark: boolean;
 }
 
 export interface PricingInfo {

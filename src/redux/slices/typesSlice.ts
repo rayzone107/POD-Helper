@@ -1,4 +1,3 @@
-// slices/typesSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Type } from '../../types';
 

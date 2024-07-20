@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, FormControlLabel, Checkbox } from '@mui/material';
 import { SketchPicker } from 'react-color';
-import './ColorVariantDialog.css';
 import { ColorVariant } from '../../../../../types';
 
 interface ColorVariantDialogProps {
@@ -13,20 +12,36 @@ interface ColorVariantDialogProps {
 
 const ColorVariantDialog: React.FC<ColorVariantDialogProps> = ({ open, variant, onClose, onSave }) => {
   const [name, setName] = useState('');
-  const [hexColorCode, setHexColorCode] = useState('#000000');
+  const [hexColorCode, setHexColorCode] = useState('');
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     if (variant) {
       setName(variant.name);
       setHexColorCode(variant.hexColorCode);
-    } else {
-      setName('');
-      setHexColorCode('#000000');
+      setIsDark(variant.isDark);
     }
   }, [variant]);
 
   const handleSave = () => {
-    onSave({ id: variant ? variant.id : '', name, hexColorCode });
+    if (variant) {
+      onSave({
+        ...variant,
+        name,
+        hexColorCode,
+        isDark,
+      });
+    } else {
+      onSave({
+        id: '',
+        name,
+        hexColorCode,
+        isDark,
+        imageUrl: '',
+        imageFile: null,
+      });
+    }
+    onClose();
   };
 
   return (
@@ -43,6 +58,10 @@ const ColorVariantDialog: React.FC<ColorVariantDialogProps> = ({ open, variant, 
         <SketchPicker
           color={hexColorCode}
           onChangeComplete={(color) => setHexColorCode(color.hex)}
+        />
+        <FormControlLabel
+          control={<Checkbox checked={isDark} onChange={(e) => setIsDark(e.target.checked)} />}
+          label="Is Dark"
         />
       </DialogContent>
       <DialogActions>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Checkbox } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ImageIcon from '@mui/icons-material/Image';
@@ -30,6 +30,7 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
               <TableCell>Name</TableCell>
               <TableCell>Color</TableCell>
               <TableCell>Image</TableCell>
+              <TableCell>Is Dark</TableCell>
               <TableCell>Edit</TableCell>
               <TableCell>Delete</TableCell>
             </TableRow>
@@ -37,7 +38,7 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
           <TableBody>
             {colorVariants.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={6} align="center">
                   No data yet
                 </TableCell>
               </TableRow>
@@ -64,6 +65,9 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
                     <IconButton onClick={() => onReplaceImage(variant)}>
                       <ImageIcon />
                     </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    <Checkbox checked={variant.isDark} disabled />
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={() => onEdit(variant)}>
