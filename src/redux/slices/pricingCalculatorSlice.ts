@@ -1,6 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Type } from '../../types';
 
+interface PricingInfo {
+  productionCost: number;
+  profitAmount: number;
+  profitPercentage: number;
+  finalPrice: number;
+  finalPriceRounded: number;
+}
+
 interface PricingCalculatorState {
   selectedCategory: string;
   selectedBrand: string;
@@ -9,8 +17,8 @@ interface PricingCalculatorState {
   runAdsOnEtsy: boolean;
   discountPercentageEtsy: number;
   discountPercentageShopify: number;
-  etsyPrices: Record<string, number>;
-  shopifyPrices: Record<string, number>;
+  etsyPrices: Record<string, PricingInfo>;
+  shopifyPrices: Record<string, PricingInfo>;
 }
 
 const initialState: PricingCalculatorState = {
@@ -50,10 +58,10 @@ const pricingCalculatorSlice = createSlice({
     setDiscountPercentageShopify(state, action: PayloadAction<number>) {
       state.discountPercentageShopify = action.payload;
     },
-    setEtsyPrices(state, action: PayloadAction<Record<string, number>>) {
+    setEtsyPrices(state, action: PayloadAction<Record<string, PricingInfo>>) {
       state.etsyPrices = action.payload;
     },
-    setShopifyPrices(state, action: PayloadAction<Record<string, number>>) {
+    setShopifyPrices(state, action: PayloadAction<Record<string, PricingInfo>>) {
       state.shopifyPrices = action.payload;
     },
   },

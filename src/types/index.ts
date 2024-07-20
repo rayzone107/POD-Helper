@@ -39,3 +39,11 @@ export interface ColorVariant {
   imageUrl?: string;
   imageFile?: File | null;
 }
+
+export interface PricingInfo {
+  productionCost: number;
+  profitAmount: number;
+  profitPercentage: number;
+  finalPrice: number;
+  finalPriceRounded: number;
+}
