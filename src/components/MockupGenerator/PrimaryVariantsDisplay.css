@@ -1,35 +1,41 @@
 .primary-variants-display {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .variant-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
-  
-  .variant {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  
-  .variant-image {
-    width: 300px;
-    height: 300px;
-  }
-  
-  .overlay-box {
-    position: absolute;
-    border: 2px solid red;
-    box-sizing: border-box;
-  }
-  
-  .overlay-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
+  width: 100%;
+}
+
+.variant-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.variant {
+  width: 500px;
+  position: relative;
+}
+
+.variant-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.variant-image {
+  width: 100%;
+  height: auto;
+}
+
+.overlay-box {
+  position: absolute;
+  border: 2px solid red;
+  pointer-events: none;
+}
+
+.overlay-image {
+  width: 100%;
+  height: 100%;
+}
+
+.red-box {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 0, 0, 0.3);
+}

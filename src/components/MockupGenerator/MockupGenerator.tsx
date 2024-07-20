@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
 import { fetchCategories, fetchAllBrands, fetchTypes } from '../../redux/actions';
 import { setMockupSelectedCategory, setMockupSelectedBrand, setMockupSelectedType } from '../../redux/slices/mockupGeneratorSlice';
-import { Grid, FormControl, InputLabel, Select, MenuItem, Button, Divider, Typography } from '@mui/material';
+import { Grid, FormControl, InputLabel, Select, MenuItem, Divider, Typography, Container } from '@mui/material';
 import PrimaryVariantsDisplay from './PrimaryVariantsDisplay';
 import ColorVariantsSelector from './ColorVariantsSelector';
 import GenerateMockups from './GenerateMockups';
+import { APP_PADDING } from '../../utils/constants';
 import './MockupGenerator.css';
 
 const MockupGenerator: React.FC = () => {
@@ -26,7 +27,10 @@ const MockupGenerator: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <div style={{ padding: '30px' }}>
+    <Container style={{ padding: APP_PADDING }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Mockup Generator
+      </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <FormControl fullWidth>
@@ -78,7 +82,7 @@ const MockupGenerator: React.FC = () => {
                     {type.name}
                   </MenuItem>
                 ))}
-            </Select>
+          </Select>
           </FormControl>
         </Grid>
         <Divider style={{ margin: '20px 0', width: '100%' }} />
@@ -92,7 +96,7 @@ const MockupGenerator: React.FC = () => {
           </>
         )}
       </Grid>
-    </div>
+    </Container>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
 import { setMockupLightVariantOverlay, setMockupDarkVariantOverlay, setMockupOverlayPosition } from '../../redux/slices/mockupGeneratorSlice';
@@ -13,6 +13,23 @@ const PrimaryVariantsDisplay: React.FC = () => {
   const darkVariantOverlay = useSelector((state: RootState) => state.mockupGenerator.darkVariantOverlay);
   const overlayPosition = useSelector((state: RootState) => state.mockupGenerator.overlayPosition);
 
+  const [lightVariantImage, setLightVariantImage] = useState<string | null>(null);
+  const [darkVariantImage, setDarkVariantImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedType) {
+      const lightVariant = selectedType.colorVariants.find(variant => variant.id === selectedType.primaryLightVariant);
+      const darkVariant = selectedType.colorVariants.find(variant => variant.id === selectedType.primaryDarkVariant);
+
+      if (lightVariant) {
+        setLightVariantImage(lightVariant.imageUrl || null);
+      }
+      if (darkVariant) {
+        setDarkVariantImage(darkVariant.imageUrl || null);
+      }
+    }
+  }, [selectedType]);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, variant: 'light' | 'dark') => {
     const file = event.target.files?.[0] || null;
     if (variant === 'light') {
@@ -20,6 +37,19 @@ const PrimaryVariantsDisplay: React.FC = () => {
     } else {
       dispatch(setMockupDarkVariantOverlay(file));
     }
+  };
+
+  const getOverlayStyles = () => {
+    if (!selectedType) return {};
+    const { startX, startY, endX, endY } = selectedType.boundingOverlayBoxDimensions;
+    const width = endX - startX;
+    const height = endY - startY;
+    return {
+      left: `${(startX / 100) * 500}px`,
+      top: `${(startY / 100) * 500}px`,
+      width: `${(width / 100) * 500}px`,
+      height: `${(height / 100) * 500}px`,
+    };
   };
 
   return (
@@ -30,27 +60,21 @@ const PrimaryVariantsDisplay: React.FC = () => {
       <div className="variant-container">
         <div className="variant">
           <Typography variant="subtitle1">Light Variant</Typography>
-          <img src={selectedType?.primaryLightVariant} alt="Light Variant" className="variant-image" />
-          <Rnd
-            bounds="parent"
-            size={{ width: overlayPosition.width, height: overlayPosition.height }}
-            position={{ x: overlayPosition.x, y: overlayPosition.y }}
-            onDragStop={(e, d) => {
-              dispatch(setMockupOverlayPosition({ x: d.x, y: d.y, width: overlayPosition.width, height: overlayPosition.height }));
-            }}
-            onResizeStop={(e, direction, ref, delta, position) => {
-              dispatch(setMockupOverlayPosition({
-                x: position.x,
-                y: position.y,
-                width: ref.style.width ? parseInt(ref.style.width, 10) : overlayPosition.width,
-                height: ref.style.height ? parseInt(ref.style.height, 10) : overlayPosition.height,
-              }));
-            }}
-          >
-            {lightVariantOverlay && (
-              <img src={URL.createObjectURL(lightVariantOverlay)} alt="Overlay" className="overlay-image" />
+          <div className="variant-wrapper">
+            {lightVariantImage ? (
+              <img src={lightVariantImage} alt="Light Variant" className="variant-image" />
+            ) : (
+              <Typography>No Image</Typography>
             )}
-          </Rnd>
+            <div className="overlay-box" style={getOverlayStyles()}>
+              {lightVariantOverlay && (
+                <img src={URL.createObjectURL(lightVariantOverlay)} alt="Overlay" className="overlay-image" />
+              )}
+              {!lightVariantOverlay && (
+                <div className="red-box" />
+              )}
+            </div>
+          </div>
           <input
             type="file"
             accept="image/*"
@@ -66,20 +90,21 @@ const PrimaryVariantsDisplay: React.FC = () => {
         </div>
         <div className="variant">
           <Typography variant="subtitle1">Dark Variant</Typography>
-          <img src={selectedType?.primaryDarkVariant} alt="Dark Variant" className="variant-image" />
-          {darkVariantOverlay && (
-            <div
-              className="overlay-box"
-              style={{
-                top: `${overlayPosition.y}%`,
-                left: `${overlayPosition.x}%`,
-                width: `${overlayPosition.width}%`,
-                height: `${overlayPosition.height}%`,
-              }}
-            >
-              <img src={URL.createObjectURL(darkVariantOverlay)} alt="Overlay" className="overlay-image" />
+          <div className="variant-wrapper">
+            {darkVariantImage ? (
+              <img src={darkVariantImage} alt="Dark Variant" className="variant-image" />
+            ) : (
+              <Typography>No Image</Typography>
+            )}
+            <div className="overlay-box" style={getOverlayStyles()}>
+              {darkVariantOverlay && (
+                <img src={URL.createObjectURL(darkVariantOverlay)} alt="Overlay" className="overlay-image" />
+              )}
+              {!darkVariantOverlay && (
+                <div className="red-box" />
+              )}
             </div>
-          )}
+          </div>
           <input
             type="file"
             accept="image/*"
