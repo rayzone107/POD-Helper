@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
-import { setMockupLightVariantOverlay, setMockupDarkVariantOverlay, setMockupOverlayPosition } from '../../redux/slices/mockupGeneratorSlice';
+import { setMockupLightVariantOverlay, setMockupDarkVariantOverlay, setMockupOverlayPosition, setMockupOverlayCoords } from '../../redux/slices/mockupGeneratorSlice';
 import { Typography, Button } from '@mui/material';
 import { Rnd } from 'react-rnd';
 import './PrimaryVariantsDisplay.css';
@@ -37,6 +37,15 @@ const PrimaryVariantsDisplay: React.FC = () => {
     } else {
       dispatch(setMockupDarkVariantOverlay(file));
     }
+  };
+
+  const updateOverlayCoords = (x: number, y: number, width: number, height: number) => {
+    dispatch(setMockupOverlayCoords({
+      startX: x,
+      startY: y,
+      endX: x + width,
+      endY: y + height,
+    }));
   };
 
   const getOverlayStyles = () => {
@@ -81,6 +90,7 @@ const PrimaryVariantsDisplay: React.FC = () => {
               position={{ x: overlayPosition.x, y: overlayPosition.y }}
               onDragStop={(e, d) => {
                 dispatch(setMockupOverlayPosition({ x: d.x, y: d.y, width: overlayPosition.width, height: overlayPosition.height }));
+                updateOverlayCoords(d.x, d.y, overlayPosition.width, overlayPosition.height);
               }}
               onResizeStop={(e, direction, ref, delta, position) => {
                 dispatch(setMockupOverlayPosition({
@@ -89,6 +99,7 @@ const PrimaryVariantsDisplay: React.FC = () => {
                   width: ref.offsetWidth,
                   height: ref.offsetHeight,
                 }));
+                updateOverlayCoords(position.x, position.y, ref.offsetWidth, ref.offsetHeight);
               }}
               resizeHandleStyles={{
                 top: { display: 'none' },
@@ -118,6 +129,9 @@ const PrimaryVariantsDisplay: React.FC = () => {
               Upload Light Variant Overlay
             </Button>
           </label>
+          <Typography variant="body1">
+            StartX: {overlayPosition.x}, StartY: {overlayPosition.y}, EndX: {overlayPosition.x + overlayPosition.width}, EndY: {overlayPosition.y + overlayPosition.height}
+          </Typography>
         </div>
         <div className="variant">
           <Typography variant="subtitle1">Dark Variant</Typography>
@@ -133,6 +147,7 @@ const PrimaryVariantsDisplay: React.FC = () => {
               position={{ x: overlayPosition.x, y: overlayPosition.y }}
               onDragStop={(e, d) => {
                 dispatch(setMockupOverlayPosition({ x: d.x, y: d.y, width: overlayPosition.width, height: overlayPosition.height }));
+                updateOverlayCoords(d.x, d.y, overlayPosition.width, overlayPosition.height);
               }}
               onResizeStop={(e, direction, ref, delta, position) => {
                 dispatch(setMockupOverlayPosition({
@@ -141,6 +156,7 @@ const PrimaryVariantsDisplay: React.FC = () => {
                   width: ref.offsetWidth,
                   height: ref.offsetHeight,
                 }));
+                updateOverlayCoords(position.x, position.y, ref.offsetWidth, ref.offsetHeight);
               }}
               resizeHandleStyles={{
                 top: { display: 'none' },
@@ -170,6 +186,9 @@ const PrimaryVariantsDisplay: React.FC = () => {
               Upload Dark Variant Overlay
             </Button>
           </label>
+          <Typography variant="body1">
+            StartX: {overlayPosition.x}, StartY: {overlayPosition.y}, EndX: {overlayPosition.x + overlayPosition.width}, EndY: {overlayPosition.y + overlayPosition.height}
+          </Typography>
         </div>
       </div>
     </div>

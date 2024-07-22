@@ -16,16 +16,15 @@ const GenerateMockups: React.FC = () => {
   const navigate = useNavigate();
 
   const handleGenerateMockups = () => {
-    console.log('Selected Type:', selectedType);
-    console.log('Selected Color Variants:', selectedColorVariants);
-    console.log('Light Variant Overlay:', lightVariantOverlay);
-    console.log('Dark Variant Overlay:', darkVariantOverlay);
-    console.log('Overlay Position:', overlayPosition);
-
     if (selectedType && lightVariantOverlay && darkVariantOverlay) {
-      navigate('/generated-mockups');
-    } else {
-      console.error('Required data not available to generate mockups.');
+      const overlayCoords = {
+        startX: overlayPosition.x.toString(),
+        startY: overlayPosition.y.toString(),
+        endX: (overlayPosition.x + overlayPosition.width).toString(),
+        endY: (overlayPosition.y + overlayPosition.height).toString(),
+      };
+      const coordsQuery = new URLSearchParams(overlayCoords).toString();
+      navigate(`/generated-mockups?${coordsQuery}`);
     }
   };
 

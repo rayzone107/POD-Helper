@@ -1,5 +1,14 @@
+// src/redux/slices/mockupGeneratorSlice.ts
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Type } from '../../types';
+
+interface OverlayCoords {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+}
 
 interface MockupGeneratorState {
   selectedCategory: string;
@@ -14,6 +23,7 @@ interface MockupGeneratorState {
     height: number;
   };
   selectedColorVariants: string[];
+  overlayCoords: OverlayCoords;
 }
 
 const initialState: MockupGeneratorState = {
@@ -29,6 +39,12 @@ const initialState: MockupGeneratorState = {
     height: 100,
   },
   selectedColorVariants: [],
+  overlayCoords: {
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0,
+  },
 };
 
 const mockupGeneratorSlice = createSlice({
@@ -56,6 +72,9 @@ const mockupGeneratorSlice = createSlice({
     setMockupSelectedColorVariants(state, action: PayloadAction<string[]>) {
       state.selectedColorVariants = action.payload;
     },
+    setMockupOverlayCoords(state, action: PayloadAction<OverlayCoords>) {
+      state.overlayCoords = action.payload;
+    },
   },
 });
 
@@ -67,6 +86,7 @@ export const {
   setMockupDarkVariantOverlay,
   setMockupOverlayPosition,
   setMockupSelectedColorVariants,
+  setMockupOverlayCoords,
 } = mockupGeneratorSlice.actions;
 
 export default mockupGeneratorSlice.reducer;
