@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Typography, Button } from '@mui/material';
 import { RootState } from '../../../redux/store';
+import html2canvas from 'html2canvas';
 import './GeneratedMockups.css';
 
 const GeneratedMockups: React.FC = () => {
@@ -46,53 +47,68 @@ const GeneratedMockups: React.FC = () => {
   }, [mockupImages]);
 
   const handleDownloadMockup = async () => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx || !mockupImages.length) return;
+    const totalGroups = Math.ceil(mockupImages.length / 9);
 
-    const mockup = mockupImages[0];
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.src = mockup.imageUrl;
+    for (let i = 0; i < totalGroups; i++) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      const group = mockupImages.slice(i * 9, (i + 1) * 9);
+      const numCols = Math.min(3, group.length); // Number of columns based on items in the group
+      const numRows = Math.ceil(group.length / 3); // Number of rows
 
-      const overlayImg = new Image();
-      overlayImg.crossOrigin = 'Anonymous';
-      overlayImg.src = URL.createObjectURL(mockup.isDark ? darkVariantOverlay! : lightVariantOverlay!);
+      canvas.width = numCols * 600;
+      canvas.height = numRows * 600;
 
-      overlayImg.onload = () => {
-        const overlayWidth = overlayImg.width;
-        const overlayHeight = overlayImg.height;
+      for (let j = 0; j < group.length; j++) {
+        const mockup = group[j];
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = mockup.imageUrl;
 
-        // Calculate the aspect ratio maintained overlay dimensions within the bounds
-        const boundsWidth = ((overlayCoords.endX - overlayCoords.startX) / 500) * img.width;
-        const boundsHeight = ((overlayCoords.endY - overlayCoords.startY) / 500) * img.height;
+        await new Promise<void>(resolve => {
+          img.onload = () => {
+            const x = (j % 3) * 600;
+            const y = Math.floor(j / 3) * 600;
+            ctx.drawImage(img, x, y, 600, 600);
 
-        const aspectRatio = overlayWidth / overlayHeight;
-        let displayWidth, displayHeight;
-        if (boundsWidth / boundsHeight > aspectRatio) {
-          displayHeight = boundsHeight;
-          displayWidth = boundsHeight * aspectRatio;
-        } else {
-          displayWidth = boundsWidth;
-          displayHeight = boundsWidth / aspectRatio;
-        }
+            const overlayImg = new Image();
+            overlayImg.crossOrigin = 'Anonymous';
+            overlayImg.src = URL.createObjectURL(mockup.isDark ? darkVariantOverlay! : lightVariantOverlay!);
 
-        const overlayLeft = (overlayCoords.startX / 500) * img.width;
-        const overlayTop = (overlayCoords.startY / 500) * img.height;
+            overlayImg.onload = () => {
+              const overlayWidth = overlayImg.width;
+              const overlayHeight = overlayImg.height;
 
-        ctx.drawImage(overlayImg, overlayLeft, overlayTop, displayWidth, displayHeight);
+              const boundsWidth = ((overlayCoords.endX - overlayCoords.startX) / 500) * 600;
+              const boundsHeight = ((overlayCoords.endY - overlayCoords.startY) / 500) * 600;
 
-        const link = document.createElement('a');
-        link.download = 'mockup.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      };
-    };
+              const aspectRatio = overlayWidth / overlayHeight;
+              let displayWidth, displayHeight;
+              if (boundsWidth / boundsHeight > aspectRatio) {
+                displayHeight = boundsHeight;
+                displayWidth = boundsHeight * aspectRatio;
+              } else {
+                displayWidth = boundsWidth;
+                displayHeight = boundsWidth / aspectRatio;
+              }
+
+              const overlayLeft = (overlayCoords.startX / 500) * 600;
+              const overlayTop = (overlayCoords.startY / 500) * 600;
+
+              ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
+              resolve();
+            };
+          };
+        });
+      }
+
+      const link = document.createElement('a');
+      link.download = `mockup_group_${i + 1}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
   };
 
   return (
@@ -102,6 +118,7 @@ const GeneratedMockups: React.FC = () => {
         color="primary"
         onClick={handleDownloadMockup}
         disabled={!imagesLoaded}
+        style={{ marginBottom: '16px' }}
       >
         Download Mockup
       </Button>
