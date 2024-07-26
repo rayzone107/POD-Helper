@@ -59,7 +59,11 @@ const GeneratedMockups: React.FC = () => {
       const numRows = Math.ceil(group.length / 3); // Number of rows
 
       canvas.width = numCols * 600;
-      canvas.height = numRows * 600;
+      canvas.height = numRows * 650; // Added extra height for text
+
+      // Set white background
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       for (let j = 0; j < group.length; j++) {
         const mockup = group[j];
@@ -70,7 +74,7 @@ const GeneratedMockups: React.FC = () => {
         await new Promise<void>(resolve => {
           img.onload = () => {
             const x = (j % 3) * 600;
-            const y = Math.floor(j / 3) * 600;
+            const y = Math.floor(j / 3) * 650;
             ctx.drawImage(img, x, y, 600, 600);
 
             const overlayImg = new Image();
@@ -98,6 +102,13 @@ const GeneratedMockups: React.FC = () => {
               const overlayTop = (overlayCoords.startY / 500) * 600;
 
               ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
+
+              // Draw text below the image
+              ctx.fillStyle = '#000000';
+              ctx.font = '40px Arial'; // Doubled the text size and made it bold
+              ctx.textAlign = 'center'; // Center the text
+              ctx.fillText(mockup.name, x + 300, y + 630); // Adjust the position of the text
+
               resolve();
             };
           };
