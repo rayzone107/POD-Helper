@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Typography, Button } from '@mui/material';
 import { RootState } from '../../../redux/store';
-import html2canvas from 'html2canvas';
 import './GeneratedMockups.css';
 
 const GeneratedMockups: React.FC = () => {
@@ -59,9 +58,8 @@ const GeneratedMockups: React.FC = () => {
       const numRows = Math.ceil(group.length / 3); // Number of rows
 
       canvas.width = numCols * 600;
-      canvas.height = numRows * 650; // Added extra height for text
+      canvas.height = numRows * 650;
 
-      // Set white background
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -105,9 +103,9 @@ const GeneratedMockups: React.FC = () => {
 
               // Draw text below the image
               ctx.fillStyle = '#000000';
-              ctx.font = '40px Arial'; // Doubled the text size and made it bold
-              ctx.textAlign = 'center'; // Center the text
-              ctx.fillText(mockup.name, x + 300, y + 630); // Adjust the position of the text
+              ctx.font = '40px Arial';
+              ctx.textAlign = 'center';
+              ctx.fillText(mockup.name, x + 300, y + 630);
 
               resolve();
             };
@@ -131,7 +129,7 @@ const GeneratedMockups: React.FC = () => {
         disabled={!imagesLoaded}
         style={{ marginBottom: '16px' }}
       >
-        Download Mockup
+        Download Mockup Images
       </Button>
       <div className="mockup-grid" ref={captureRef}>
         {mockupImages.map((mockup, index) => (
@@ -161,11 +159,6 @@ const GeneratedMockups: React.FC = () => {
               <Typography variant="body1" fontWeight="bold">
                 {mockup.name}
               </Typography>
-              <Typography variant="body2">Width: {mockup.width}px, Height: {mockup.height}px</Typography>
-              <Typography variant="body2">Overlay Left: {(overlayCoords.startX / 500) * mockup.width}px</Typography>
-              <Typography variant="body2">Overlay Top: {(overlayCoords.startY / 500) * mockup.height}px</Typography>
-              <Typography variant="body2">Overlay Width: {((overlayCoords.endX - overlayCoords.startX) / 500) * mockup.width}px</Typography>
-              <Typography variant="body2">Overlay Height: {((overlayCoords.endY - overlayCoords.startY) / 500) * mockup.height}px</Typography>
             </div>
           </div>
         ))}
