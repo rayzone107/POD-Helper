@@ -4,11 +4,11 @@ import { RootState, AppDispatch } from '../../redux/store';
 import { fetchCategories, fetchAllBrands, fetchTypes } from '../../redux/actions';
 import { setMockupSelectedCategory, setMockupSelectedBrand, setMockupSelectedType } from '../../redux/slices/mockupGeneratorSlice';
 import { Grid, FormControl, InputLabel, Select, MenuItem, Divider, Typography, Container } from '@mui/material';
-import PrimaryVariantsDisplay from './PrimaryVariantsDisplay';
-import ColorVariantsSelector from './ColorVariantsSelector';
-import GenerateMockups from './GenerateMockups';
+import PrimaryVariantsDisplay from './PrimaryVariantsDisplay/PrimaryVariantsDisplay';
 import { APP_PADDING } from '../../utils/constants';
 import './MockupGenerator.css';
+import GenerateMockups from './GenerateMockups/GenerateMockups';
+import ColorVariantsSelector from './ColorVariantsSelector/ColorVariantsSelector';
 
 const MockupGenerator: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { RootState, AppDispatch } from '../../redux/store';
+import { RootState, AppDispatch } from '../../../redux/store';
 import { Button, Typography } from '@mui/material';
 import './GenerateMockups.css';
 

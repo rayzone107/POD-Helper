@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../redux/store';
-import { setMockupLightVariantOverlay, setMockupDarkVariantOverlay, setMockupOverlayPosition, setMockupOverlayCoords } from '../../redux/slices/mockupGeneratorSlice';
+import { RootState, AppDispatch } from '../../../redux/store';
+import { setMockupLightVariantOverlay, setMockupDarkVariantOverlay, setMockupOverlayPosition, setMockupOverlayCoords } from '../../../redux/slices/mockupGeneratorSlice';
 import { Typography, Button } from '@mui/material';
 import { Rnd } from 'react-rnd';
 import './PrimaryVariantsDisplay.css';

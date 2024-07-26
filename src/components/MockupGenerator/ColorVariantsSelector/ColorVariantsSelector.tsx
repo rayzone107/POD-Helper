@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../redux/store';
-import { setMockupSelectedColorVariants } from '../../redux/slices/mockupGeneratorSlice';
+import { RootState, AppDispatch } from '../../../redux/store';
+import { setMockupSelectedColorVariants } from '../../../redux/slices/mockupGeneratorSlice';
 import { FormControlLabel, Checkbox, Typography, Grid } from '@mui/material';
 import './ColorVariantsSelector.css';
 
