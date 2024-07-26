@@ -101,6 +101,7 @@ const PrimaryVariantsDisplay: React.FC = () => {
                 }));
                 updateOverlayCoords(position.x, position.y, ref.offsetWidth, ref.offsetHeight);
               }}
+              lockAspectRatio
               resizeHandleStyles={{
                 top: { display: 'none' },
                 right: { display: 'none' },
@@ -158,6 +159,7 @@ const PrimaryVariantsDisplay: React.FC = () => {
                 }));
                 updateOverlayCoords(position.x, position.y, ref.offsetWidth, ref.offsetHeight);
               }}
+              lockAspectRatio
               resizeHandleStyles={{
                 top: { display: 'none' },
                 right: { display: 'none' },
