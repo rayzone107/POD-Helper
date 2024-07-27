@@ -1,3 +1,4 @@
+// src/components/MockupGenerator/GeneratedMockups/GeneratedMockups.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Typography, Button } from '@mui/material';
@@ -77,7 +78,7 @@ const GeneratedMockups: React.FC = () => {
 
             const overlayImg = new Image();
             overlayImg.crossOrigin = 'Anonymous';
-            overlayImg.src = URL.createObjectURL(mockup.isDark ? darkVariantOverlay! : lightVariantOverlay!);
+            overlayImg.src = URL.createObjectURL(mockup.isDark ? (darkVariantOverlay || lightVariantOverlay!) : lightVariantOverlay!);
 
             overlayImg.onload = () => {
               const overlayWidth = overlayImg.width;
@@ -141,9 +142,9 @@ const GeneratedMockups: React.FC = () => {
                 className="variant-image"
                 onLoad={(event) => handleImageLoad(event, index)}
               />
-              {(mockup.isDark ? darkVariantOverlay : lightVariantOverlay) && (
+              {lightVariantOverlay || darkVariantOverlay ? (
                 <img
-                  src={URL.createObjectURL(mockup.isDark ? darkVariantOverlay! : lightVariantOverlay!)}
+                  src={URL.createObjectURL(mockup.isDark ? (darkVariantOverlay || lightVariantOverlay!) : lightVariantOverlay!)}
                   alt="Overlay"
                   className="overlay-image"
                   style={{
@@ -153,7 +154,7 @@ const GeneratedMockups: React.FC = () => {
                     height: `${((overlayCoords.endY - overlayCoords.startY) / 500) * mockup.height}px`,
                   }}
                 />
-              )}
+              ) : null}
             </div>
             <div className="text-wrapper">
               <Typography variant="body1" fontWeight="bold">

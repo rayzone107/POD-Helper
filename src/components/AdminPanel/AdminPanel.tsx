@@ -18,7 +18,7 @@ const AdminPanel: React.FC = () => {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
 
-  const [pageSize, setPageSize] = useState<number>(5);
+  const [pageSize, setPageSize] = useState<number>(20);
   const [page, setPage] = useState<number>(0);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [typeToDelete, setTypeToDelete] = useState<string | null>(null);

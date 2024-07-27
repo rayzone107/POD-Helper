@@ -1,3 +1,4 @@
+// src/components/MockupGenerator/PrimaryVariantsDisplay/PrimaryVariantsDisplay.tsx
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
@@ -34,8 +35,14 @@ const PrimaryVariantsDisplay: React.FC = () => {
     const file = event.target.files?.[0] || null;
     if (variant === 'light') {
       dispatch(setMockupLightVariantOverlay(file));
+      if (!darkVariantOverlay) {
+        dispatch(setMockupDarkVariantOverlay(file));
+      }
     } else {
       dispatch(setMockupDarkVariantOverlay(file));
+      if (!lightVariantOverlay) {
+        dispatch(setMockupLightVariantOverlay(file));
+      }
     }
   };
 
@@ -130,9 +137,6 @@ const PrimaryVariantsDisplay: React.FC = () => {
               Upload Light Variant Overlay
             </Button>
           </label>
-          <Typography variant="body1">
-            StartX: {overlayPosition.x}, StartY: {overlayPosition.y}, EndX: {overlayPosition.x + overlayPosition.width}, EndY: {overlayPosition.y + overlayPosition.height}
-          </Typography>
         </div>
         <div className="variant">
           <Typography variant="subtitle1">Dark Variant</Typography>
@@ -188,9 +192,6 @@ const PrimaryVariantsDisplay: React.FC = () => {
               Upload Dark Variant Overlay
             </Button>
           </label>
-          <Typography variant="body1">
-            StartX: {overlayPosition.x}, StartY: {overlayPosition.y}, EndX: {overlayPosition.x + overlayPosition.width}, EndY: {overlayPosition.y + overlayPosition.height}
-          </Typography>
         </div>
       </div>
     </div>
