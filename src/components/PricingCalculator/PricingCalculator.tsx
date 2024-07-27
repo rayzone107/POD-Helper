@@ -1,19 +1,18 @@
-import React, { useEffect } from 'react';
-import { Grid, FormControl, InputLabel, Select, MenuItem, TextField, Checkbox, FormControlLabel, Button, Typography, Divider } from '@mui/material';
+import React from 'react';
+import { Grid, TextField, Checkbox, FormControlLabel, Button, Typography, Divider, Container } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
-import { fetchCategories, fetchAllBrands, fetchTypes, calculatePrices } from '../../redux/actions';
+import { calculatePrices } from '../../redux/actions';
 import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercentage, setRunAdsOnEtsy, setDiscountPercentageEtsy, setDiscountPercentageShopify } from '../../redux/slices/pricingCalculatorSlice';
 import PricingTable from './PricingTable/PricingTable';
 import { APP_PADDING } from '../../utils/constants';
+import TypeSelector from '../common/TypeSelector/TypeSelector';
 import './PricingCalculator.css';
+import { Type } from '../../types';
 
 const PricingCalculator: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const categories = useSelector((state: RootState) => state.categories.categories);
-  const brands = useSelector((state: RootState) => state.brands.brands);
-  const types = useSelector((state: RootState) => state.types.types);
   const selectedCategory = useSelector((state: RootState) => state.pricingCalculator.selectedCategory);
   const selectedBrand = useSelector((state: RootState) => state.pricingCalculator.selectedBrand);
   const selectedType = useSelector((state: RootState) => state.pricingCalculator.selectedType);
@@ -24,72 +23,37 @@ const PricingCalculator: React.FC = () => {
   const etsyPrices = useSelector((state: RootState) => state.pricingCalculator.etsyPrices);
   const shopifyPrices = useSelector((state: RootState) => state.pricingCalculator.shopifyPrices);
 
-  useEffect(() => {
-    dispatch(fetchCategories());
-    dispatch(fetchAllBrands());
-    dispatch(fetchTypes());
-  }, [dispatch]);
-
   const handleCalculate = () => {
     dispatch(calculatePrices());
   };
 
+  const handleCategoryChange = (category: string) => {
+    dispatch(setSelectedCategory(category));
+  };
+
+  const handleBrandChange = (brand: string) => {
+    dispatch(setSelectedBrand(brand));
+  };
+
+  const handleTypeChange = (type: Type | null) => {
+    dispatch(setSelectedType(type));
+  };
+
   return (
-    <div style={{ padding: APP_PADDING }}>
+    <Container style={{ padding: APP_PADDING }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Pricing Calculator
+      </Typography>
+      <TypeSelector
+        selectedCategory={selectedCategory}
+        selectedBrand={selectedBrand}
+        selectedType={selectedType}
+        onCategoryChange={handleCategoryChange}
+        onBrandChange={handleBrandChange}
+        onTypeChange={handleTypeChange}
+      />
+      <Divider style={{ margin: '20px 0', width: '100%' }} />
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>Category</InputLabel>
-            <Select
-              value={selectedCategory}
-              onChange={(e) => dispatch(setSelectedCategory(e.target.value))}
-            >
-              {categories.map((category) => (
-                <MenuItem key={category.id} value={category.id}>
-                  {category.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>Brand</InputLabel>
-            <Select
-              value={selectedBrand}
-              onChange={(e) => dispatch(setSelectedBrand(e.target.value))}
-              disabled={!selectedCategory}
-            >
-              {brands
-                .filter((brand) => brand.categoryId === selectedCategory)
-                .map((brand) => (
-                  <MenuItem key={brand.id} value={brand.id}>
-                    {brand.name}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel>Type</InputLabel>
-            <Select
-              value={selectedType ? selectedType.id : ''}
-              onChange={(e) =>
-                dispatch(setSelectedType(types.find((type) => type.id === e.target.value) || null))
-              }
-              disabled={!selectedBrand}
-            >
-              {types
-                .filter((type) => type.categoryId === selectedCategory && type.brandId === selectedBrand)
-                .map((type) => (
-                  <MenuItem key={type.id} value={type.id}>
-                    {type.name}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Grid>
         <Grid item xs={12}>
           <Grid container spacing={3}>
             <Grid item xs={6}>
@@ -101,7 +65,7 @@ const PricingCalculator: React.FC = () => {
                 variant="outlined"
                 type="number"
                 fullWidth
-                className='input-field'
+                className="input-field"
                 value={profitPercentage}
                 onChange={(e) => dispatch(setProfitPercentage(parseFloat(e.target.value)))}
               />
@@ -142,7 +106,7 @@ const PricingCalculator: React.FC = () => {
                 fullWidth
                 value={discountPercentageShopify}
                 onChange={(e) => dispatch(setDiscountPercentageShopify(parseFloat(e.target.value)))}
-                style={{ marginTop: '10px' }} // Add margin to separate fields
+                style={{ marginTop: '10px' }}
               />
             </Grid>
           </Grid>
@@ -157,14 +121,14 @@ const PricingCalculator: React.FC = () => {
             Calculate Prices
           </Button>
         </Grid>
-        <Divider style={{ margin: '20px 0', width: '100%' }} /> {/* Add divider between sections */}
+        <Divider style={{ margin: '20px 0', width: '100%' }} />
         <Grid item xs={12}>
           <Typography variant="h6" component="h2" gutterBottom>
             Etsy Prices
           </Typography>
           <PricingTable prices={etsyPrices} />
         </Grid>
-        <Divider style={{ margin: '20px 0', width: '100%' }} /> {/* Add divider between sections */}
+        <Divider style={{ margin: '20px 0', width: '100%' }} />
         <Grid item xs={12}>
           <Typography variant="h6" component="h2" gutterBottom>
             Shopify Prices
@@ -172,7 +136,7 @@ const PricingCalculator: React.FC = () => {
           <PricingTable prices={shopifyPrices} />
         </Grid>
       </Grid>
-    </div>
+    </Container>
   );
 };
 
