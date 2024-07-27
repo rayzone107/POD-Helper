@@ -41,9 +41,6 @@ const PricingCalculator: React.FC = () => {
 
   return (
     <Container style={{ padding: APP_PADDING }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Pricing Calculator
-      </Typography>
       <TypeSelector
         selectedCategory={selectedCategory}
         selectedBrand={selectedBrand}
