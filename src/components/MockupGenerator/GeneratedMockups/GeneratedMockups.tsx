@@ -1,8 +1,9 @@
 // src/components/MockupGenerator/GeneratedMockups/GeneratedMockups.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, Slider } from '@mui/material';
 import { RootState } from '../../../redux/store';
+import { fetchSettings, AppSettings } from '../../../services/settingsService';
 import './GeneratedMockups.css';
 
 const GeneratedMockups: React.FC = () => {
@@ -16,6 +17,24 @@ const GeneratedMockups: React.FC = () => {
   const darkVariantOverlay = useSelector((state: RootState) => state.mockupGenerator.darkVariantOverlay);
 
   const [mockupImages, setMockupImages] = useState<{ variantId: string; imageUrl: string; isDark: boolean; width: number; height: number; name: string }[]>([]);
+
+  const [gridSize, setGridSize] = useState({ horizontal: 3, vertical: 3 });
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const settings: AppSettings = await fetchSettings();
+        setGridSize({
+          horizontal: settings.mockupGrid.horizontal,
+          vertical: settings.mockupGrid.vertical,
+        });
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
 
   useEffect(() => {
     if (selectedType) {
@@ -47,16 +66,16 @@ const GeneratedMockups: React.FC = () => {
   }, [mockupImages]);
 
   const handleDownloadMockup = async () => {
-    const totalGroups = Math.ceil(mockupImages.length / 9);
+    const totalGroups = Math.ceil(mockupImages.length / (gridSize.horizontal * gridSize.vertical));
 
     for (let i = 0; i < totalGroups; i++) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const group = mockupImages.slice(i * 9, (i + 1) * 9);
-      const numCols = Math.min(3, group.length); // Number of columns based on items in the group
-      const numRows = Math.ceil(group.length / 3); // Number of rows
+      const group = mockupImages.slice(i * gridSize.horizontal * gridSize.vertical, (i + 1) * gridSize.horizontal * gridSize.vertical);
+      const numCols = Math.min(gridSize.horizontal, group.length); // Number of columns based on items in the group
+      const numRows = Math.ceil(group.length / gridSize.horizontal); // Number of rows
 
       canvas.width = numCols * 600;
       canvas.height = numRows * 650;
@@ -72,8 +91,8 @@ const GeneratedMockups: React.FC = () => {
 
         await new Promise<void>(resolve => {
           img.onload = () => {
-            const x = (j % 3) * 600;
-            const y = Math.floor(j / 3) * 650;
+            const x = (j % gridSize.horizontal) * 600;
+            const y = Math.floor(j / gridSize.horizontal) * 650;
             ctx.drawImage(img, x, y, 600, 600);
 
             const overlayImg = new Image();
@@ -123,6 +142,31 @@ const GeneratedMockups: React.FC = () => {
 
   return (
     <div>
+      <Typography variant="h6" gutterBottom>
+        Grid Size
+      </Typography>
+      <Typography gutterBottom>Horizontal</Typography>
+      <Slider
+        value={gridSize.horizontal}
+        onChange={(e, value) => setGridSize({ ...gridSize, horizontal: value as number })}
+        aria-labelledby="horizontal-slider"
+        valueLabelDisplay="auto"
+        step={1}
+        marks
+        min={2}
+        max={5}
+      />
+      <Typography gutterBottom>Vertical</Typography>
+      <Slider
+        value={gridSize.vertical}
+        onChange={(e, value) => setGridSize({ ...gridSize, vertical: value as number })}
+        aria-labelledby="vertical-slider"
+        valueLabelDisplay="auto"
+        step={1}
+        marks
+        min={2}
+        max={5}
+      />
       <Button
         variant="contained"
         color="primary"

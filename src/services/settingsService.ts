@@ -1,10 +1,16 @@
 // src/services/settingsService.ts
 import { db, doc, getDoc } from './firebaseConfig';
 
+export interface MockupGrid {
+  horizontal: number;
+  vertical: number;
+}
+
 export interface AppSettings {
   defaultProfitPercentage: number;
   defaultEtsySalePercentage: number;
   defaultShopifySalePercentage: number;
+  mockupGrid: MockupGrid;
 }
 
 export const fetchSettings = async (): Promise<AppSettings> => {

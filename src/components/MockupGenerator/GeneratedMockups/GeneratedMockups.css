@@ -1,6 +1,6 @@
+/* src/components/MockupGenerator/GeneratedMockups/GeneratedMockups.css */
 .mockup-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
 
