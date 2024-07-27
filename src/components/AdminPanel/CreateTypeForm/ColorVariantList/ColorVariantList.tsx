@@ -62,9 +62,6 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
                     ) : (
                       <Typography>No Image</Typography>
                     )}
-                    <IconButton onClick={() => onReplaceImage(variant)}>
-                      <ImageIcon />
-                    </IconButton>
                   </TableCell>
                   <TableCell>
                     <Checkbox checked={variant.isDark} disabled />

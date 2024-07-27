@@ -1,18 +1,47 @@
-.color-variant-dialog {
-    padding: var(--app-padding);
-  }
-  
-  .color-variant-dialog-title {
-    margin-bottom: 20px;
-  }
-  
-  .color-variant-dialog form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .color-picker {
-    margin-top: 20px;
-  }
-  
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dialog-content > * {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.image-picker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.image-picker-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.image-picker-placeholder {
+  font-size: 48px;
+  color: #ccc;
+}
+
+.selected-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pick-color-button {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 20px;
+}
