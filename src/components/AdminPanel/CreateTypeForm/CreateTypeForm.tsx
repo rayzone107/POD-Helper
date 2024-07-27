@@ -12,7 +12,6 @@ import SizeVariantList from './SizeVariantList/SizeVariantList';
 import PrimaryVariant from './PrimaryVariant/PrimaryVariant';
 import ColorVariantDialog from './ColorVariantList/ColorVariantDialog/ColorVariantDialog';
 import SizeVariantDialog from './SizeVariantList/SizeVariantDialog/SizeVariantDialog';
-import ReplaceImageDialog from './ColorVariantList/ReplaceImageDialog/ReplaceImageDialog';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../../../services/firebaseConfig';
 
@@ -47,9 +46,6 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
 
   const [openSizeVariantDialog, setOpenSizeVariantDialog] = useState(false);
   const [editingSizeVariant, setEditingSizeVariant] = useState<any | null>(null);
-
-  const [openReplaceImageDialog, setOpenReplaceImageDialog] = useState(false);
-  const [variantForImageReplacement, setVariantForImageReplacement] = useState<any | null>(null);
 
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -151,18 +147,8 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
     setOpenColorVariantDialog(true);
   };
 
-  const handleReplaceImage = (variant: any) => {
-    setVariantForImageReplacement(variant);
-    setOpenReplaceImageDialog(true);
-  };
-
-  const handleSaveImage = (file: File) => {
-    setColorVariants((prevVariants) =>
-      prevVariants.map((variant) =>
-        variant.id === variantForImageReplacement.id ? { ...variant, imageFile: file, imageUrl: URL.createObjectURL(file) } : variant
-      )
-    );
-    setOpenReplaceImageDialog(false);
+  const handleBulkAddColorVariants = (newVariants: any[]) => {
+    setColorVariants([...colorVariants, ...newVariants]);
   };
 
   const handleEditSizeVariant = (variant: any) => {
@@ -239,8 +225,8 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           colorVariants={colorVariants}
           onEdit={handleEditColorVariant}
           onDelete={handleDeleteColorVariant}
-          onReplaceImage={handleReplaceImage}
           onAdd={handleAddColorVariant}
+          onBulkAdd={handleBulkAddColorVariants}
         />
 
         <SizeVariantList
@@ -276,12 +262,6 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
         variant={editingSizeVariant}
         onClose={() => setOpenSizeVariantDialog(false)}
         onSave={handleSaveSizeVariant}
-      />
-      <ReplaceImageDialog
-        open={openReplaceImageDialog}
-        variantName={variantForImageReplacement?.name || ''}
-        onClose={() => setOpenReplaceImageDialog(false)}
-        onSave={handleSaveImage}
       />
       <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
         <Alert onClose={() => setSuccess(false)} severity="success">
