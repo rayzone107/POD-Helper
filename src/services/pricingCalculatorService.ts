@@ -9,11 +9,13 @@ export const calculateEtsyPrice = (
 ): PricingInfo => {
   const adsMarkup = runAds ? 0.15 : 0;
   const etsyFee = 0.065;
+  const paymentProcessingFee = 0.03;
+  const flatFee = 0.25;
   const profitAmount = productionCost * (profitPercentage / 100);
   const discountMultiplier = 1 - discountPercentage / 100;
   const basePrice = productionCost + profitAmount;
   const finalPrice = basePrice / discountMultiplier;
-  const totalFees = finalPrice * (adsMarkup + etsyFee);
+  const totalFees = (finalPrice * (adsMarkup + etsyFee + paymentProcessingFee)) + flatFee;
   const finalPriceAfterFees = finalPrice + totalFees;
   const finalPriceRounded = roundTo99Cents(finalPriceAfterFees);
 
@@ -53,9 +55,11 @@ export const calculateEtsyPriceWithoutProfit = (
 ): PricingInfo => {
   const adsMarkup = runAds ? 0.15 : 0;
   const etsyFee = 0.065;
+  const paymentProcessingFee = 0.03;
+  const flatFee = 0.25;
   const discountMultiplier = 1 - discountPercentage / 100;
   const finalPrice = productionCost / discountMultiplier;
-  const totalFees = finalPrice * (adsMarkup + etsyFee);
+  const totalFees = (finalPrice * (adsMarkup + etsyFee + paymentProcessingFee)) + flatFee;
   const finalPriceAfterFees = finalPrice + totalFees;
 
   return {
