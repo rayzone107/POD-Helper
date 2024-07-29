@@ -1,16 +1,13 @@
-// src/services/settingsService.ts
-import { db, doc, getDoc } from './firebaseConfig';
-
-export interface MockupGrid {
-  horizontal: number;
-  vertical: number;
-}
+import { db, doc, getDoc, setDoc } from './firebaseConfig';
 
 export interface AppSettings {
   defaultProfitPercentage: number;
   defaultEtsySalePercentage: number;
   defaultShopifySalePercentage: number;
-  mockupGrid: MockupGrid;
+  mockupGrid: {
+    horizontal: number;
+    vertical: number;
+  };
 }
 
 export const fetchSettings = async (): Promise<AppSettings> => {
@@ -22,4 +19,9 @@ export const fetchSettings = async (): Promise<AppSettings> => {
   } else {
     throw new Error('No settings document found');
   }
+};
+
+export const updateSettings = async (settings: AppSettings): Promise<void> => {
+  const docRef = doc(db, 'settings', 'defaults');
+  await setDoc(docRef, settings, { merge: true });
 };

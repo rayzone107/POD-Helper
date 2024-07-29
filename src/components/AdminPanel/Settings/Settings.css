@@ -1,0 +1,17 @@
+/* src/components/Settings/Settings.css */
+.container {
+    padding: var(--app-padding);
+  }
+  
+  .settings-title {
+    margin-bottom: 20px;
+  }
+  
+  .settings-slider {
+    margin-bottom: 20px;
+  }
+  
+  .settings-textfield {
+    margin-top: 10px;
+  }
+  

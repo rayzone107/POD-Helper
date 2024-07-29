@@ -18,7 +18,7 @@ const AdminPanel: React.FC = () => {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
 
-  const [pageSize, setPageSize] = useState<number>(20);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [typeToDelete, setTypeToDelete] = useState<string | null>(null);
@@ -35,6 +35,10 @@ const AdminPanel: React.FC = () => {
 
   const handleEditCategoriesAndBrands = () => {
     navigate('/edit-categories');
+  };
+
+  const handleEditSettings = () => {
+    navigate('/admin/settings');
   };
 
   const getCategoryName = (categoryId: string) => {
@@ -67,8 +71,8 @@ const AdminPanel: React.FC = () => {
 
   const columns: GridColDef[] = [
     { field: 'category', headerName: 'Category', width: 150 },
-    { field: 'brand', headerName: 'Brand', width: 150 },
-    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'brand', headerName: 'Brand', width: 250 },
+    { field: 'name', headerName: 'Name', width: 250 },
     { field: 'variantCount', headerName: 'Variant Count', width: 150 },
     {
       field: 'actions',
@@ -105,9 +109,17 @@ const AdminPanel: React.FC = () => {
       <Typography variant="h4" component="h1" className="admin-panel-title">
         Admin Panel
       </Typography>
-      <Button variant="contained" color="primary" onClick={handleEditCategoriesAndBrands} style={{ marginBottom: '20px' }}>
-        Edit Categories and Brands
-      </Button>
+      <div className="button-container" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <Button variant="contained" color="primary" onClick={handleEditCategoriesAndBrands}>
+          Edit Categories and Brands
+        </Button>
+        <Button variant="contained" color="primary" onClick={handleAddType}>
+          Add Type
+        </Button>
+        <Button variant="contained" color="primary" onClick={handleEditSettings}>
+          Edit Settings
+        </Button>
+      </div>
       <div className="table-container">
         <DataGrid
           rows={rows}
@@ -118,11 +130,6 @@ const AdminPanel: React.FC = () => {
           onPaginationModelChange={handlePaginationModelChange}
           checkboxSelection
         />
-      </div>
-      <div className="add-type-button">
-        <Button variant="contained" color="primary" onClick={handleAddType}>
-          Add Type
-        </Button>
       </div>
       <AlertDialog
         open={alertOpen}
