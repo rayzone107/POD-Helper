@@ -1,13 +1,6 @@
+// src/redux/slices/pricingCalculatorSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Type } from '../../types';
-
-interface PricingInfo {
-  productionCost: number;
-  profitAmount: number;
-  profitPercentage: number;
-  finalPrice: number;
-  finalPriceRounded: number;
-}
+import { PricingInfo, Type } from '../../types';
 
 interface PricingCalculatorState {
   selectedCategory: string;
@@ -64,6 +57,10 @@ const pricingCalculatorSlice = createSlice({
     setShopifyPrices(state, action: PayloadAction<Record<string, PricingInfo>>) {
       state.shopifyPrices = action.payload;
     },
+    resetPrices(state) {
+      state.etsyPrices = {};
+      state.shopifyPrices = {};
+    },
   },
 });
 
@@ -77,6 +74,7 @@ export const {
   setDiscountPercentageShopify,
   setEtsyPrices,
   setShopifyPrices,
+  resetPrices,
 } = pricingCalculatorSlice.actions;
 
 export default pricingCalculatorSlice.reducer;

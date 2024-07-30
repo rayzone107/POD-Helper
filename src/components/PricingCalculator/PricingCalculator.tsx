@@ -4,7 +4,7 @@ import { Grid, TextField, Checkbox, FormControlLabel, Button, Typography, Divide
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
 import { fetchCategories, fetchAllBrands, fetchTypes, calculatePrices } from '../../redux/actions';
-import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercentage, setRunAdsOnEtsy, setDiscountPercentageEtsy, setDiscountPercentageShopify } from '../../redux/slices/pricingCalculatorSlice';
+import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercentage, setRunAdsOnEtsy, setDiscountPercentageEtsy, setDiscountPercentageShopify, resetPrices } from '../../redux/slices/pricingCalculatorSlice';
 import PricingTable from './PricingTable/PricingTable';
 import TypeSelector from '../common/TypeSelector/TypeSelector';
 import { APP_PADDING } from '../../utils/constants';
@@ -44,6 +44,21 @@ const PricingCalculator: React.FC = () => {
     fetchInitialData();
   }, [dispatch]);
 
+  const handleCategoryChange = (category: string) => {
+    dispatch(setSelectedCategory(category));
+    dispatch(resetPrices());
+  };
+
+  const handleBrandChange = (brand: string) => {
+    dispatch(setSelectedBrand(brand));
+    dispatch(resetPrices());
+  };
+
+  const handleTypeChange = (type: Type | null) => {
+    dispatch(setSelectedType(type));
+    dispatch(resetPrices());
+  };
+
   const handleCalculate = () => {
     dispatch(calculatePrices());
   };
@@ -54,9 +69,9 @@ const PricingCalculator: React.FC = () => {
         selectedCategory={selectedCategory}
         selectedBrand={selectedBrand}
         selectedType={selectedType}
-        onCategoryChange={(category) => dispatch(setSelectedCategory(category))}
-        onBrandChange={(brand) => dispatch(setSelectedBrand(brand))}
-        onTypeChange={(type) => dispatch(setSelectedType(type))}
+        onCategoryChange={handleCategoryChange}
+        onBrandChange={handleBrandChange}
+        onTypeChange={handleTypeChange}
       />
       {selectedType && (
         <Grid className='margin-top' container spacing={3}>
