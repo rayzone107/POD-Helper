@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["http://localhost:3000", "https://mockup-generator-a523e.web.app"],
+    "method": ["GET", "HEAD", "POST"],
+    "maxAgeSeconds": 3600
+  }
+]
