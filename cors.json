@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["http://localhost:3000", "https://mockup-generator-a523e.web.app"],
+    "origin": ["http://localhost:3000", "https://mockup-generator-a523e.web.app", "https://pod-helper.pawcrastinate.com/"],
     "method": ["GET", "HEAD", "POST"],
     "maxAgeSeconds": 3600
   }
