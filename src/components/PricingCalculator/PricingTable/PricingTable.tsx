@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import './PricingTable.css';
 
 interface PricingTableProps {
-  prices: Record<string, { productionCost: number; profitAmount: number; profitPercentage: number; finalPrice: number; finalPriceRounded: number }>;
+  prices: Record<string, { productionCost: number; profitAmount: number; profitPercentage: number; afterDiscountPrice: number; finalPriceRounded: number }>;
 }
 
 const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
@@ -16,7 +16,7 @@ const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
             <TableCell>Production Cost</TableCell>
             <TableCell>Profit Amount</TableCell>
             <TableCell>Profit Percentage</TableCell>
-            <TableCell>Final Price</TableCell>
+            <TableCell>Discounted Price</TableCell>
             <TableCell className="rounded-price">.99 Pricing</TableCell>
           </TableRow>
         </TableHead>
@@ -27,7 +27,7 @@ const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
               <TableCell>${priceInfo.productionCost.toFixed(2)}</TableCell>
               <TableCell>${priceInfo.profitAmount.toFixed(2)}</TableCell>
               <TableCell>{priceInfo.profitPercentage.toFixed(2)}%</TableCell>
-              <TableCell>${priceInfo.finalPrice.toFixed(2)}</TableCell>
+              <TableCell>${priceInfo.afterDiscountPrice.toFixed(2)}</TableCell>
               <TableCell className="rounded-price">
                 <Typography variant="h6" component="span">
                   ${priceInfo.finalPriceRounded.toFixed(2)}

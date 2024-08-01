@@ -33,17 +33,17 @@ const initialState: MockupGeneratorState = {
   lightVariantOverlay: null,
   darkVariantOverlay: null,
   overlayPosition: {
-    x: 0,
-    y: 0,
+    x: 200,
+    y: 200,
     width: 100,
     height: 100,
   },
   selectedColorVariants: [],
   overlayCoords: {
-    startX: 0,
-    startY: 0,
-    endX: 0,
-    endY: 0,
+    startX: 200,
+    startY: 200,
+    endX: 300,
+    endY: 300,
   },
 };
 

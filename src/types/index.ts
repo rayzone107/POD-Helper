@@ -47,4 +47,5 @@ export interface PricingInfo {
   profitPercentage: number;
   finalPrice: number;
   finalPriceRounded: number;
+  afterDiscountPrice: number; 
 }

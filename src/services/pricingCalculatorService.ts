@@ -18,6 +18,7 @@ export const calculateEtsyPrice = (
   const totalFees = (finalPrice * (adsMarkup + etsyFee + paymentProcessingFee)) + flatFee;
   const finalPriceAfterFees = finalPrice + totalFees;
   const finalPriceRounded = roundTo99Cents(finalPriceAfterFees);
+  const afterDiscountPrice = finalPriceRounded * discountMultiplier;
 
   return {
     productionCost,
@@ -25,6 +26,7 @@ export const calculateEtsyPrice = (
     profitPercentage,
     finalPrice: finalPriceAfterFees,
     finalPriceRounded,
+    afterDiscountPrice
   };
 };
 
@@ -38,6 +40,7 @@ export const calculateShopifyPrice = (
   const basePrice = productionCost + profitAmount;
   const finalPrice = basePrice / discountMultiplier;
   const finalPriceRounded = roundTo99Cents(finalPrice);
+  const afterDiscountPrice = finalPriceRounded * discountMultiplier;
 
   return {
     productionCost,
@@ -45,6 +48,7 @@ export const calculateShopifyPrice = (
     profitPercentage,
     finalPrice,
     finalPriceRounded,
+    afterDiscountPrice
   };
 };
 
@@ -61,6 +65,7 @@ export const calculateEtsyPriceWithoutProfit = (
   const finalPrice = productionCost / discountMultiplier;
   const totalFees = (finalPrice * (adsMarkup + etsyFee + paymentProcessingFee)) + flatFee;
   const finalPriceAfterFees = finalPrice + totalFees;
+  const afterDiscountPrice = finalPriceAfterFees * discountMultiplier;
 
   return {
     productionCost,
@@ -68,6 +73,7 @@ export const calculateEtsyPriceWithoutProfit = (
     profitPercentage: 0,
     finalPrice: finalPriceAfterFees,
     finalPriceRounded: finalPriceAfterFees,
+    afterDiscountPrice: afterDiscountPrice,
   };
 };
 
@@ -77,6 +83,7 @@ export const calculateShopifyPriceWithoutProfit = (
 ): PricingInfo => {
   const discountMultiplier = 1 - discountPercentage / 100;
   const finalPrice = productionCost / discountMultiplier;
+  const afterDiscountPrice = finalPrice * discountMultiplier;
 
   return {
     productionCost,
@@ -84,5 +91,6 @@ export const calculateShopifyPriceWithoutProfit = (
     profitPercentage: 0,
     finalPrice,
     finalPriceRounded: finalPrice,
+    afterDiscountPrice: afterDiscountPrice,
   };
 };
