@@ -6,6 +6,17 @@
   margin-bottom: 20px;
 }
 
+.button-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-bar-container {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
 .table-container {
   width: 100%;
   margin-bottom: 20px;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Button } from '@mui/material';
+import { Container, Typography, Button, TextField, InputAdornment, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
@@ -7,7 +7,8 @@ import { fetchTypes, fetchCategories, fetchAllBrands, deleteType } from '../../r
 import { DataGrid, GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import SearchIcon from '@mui/icons-material/Search';
 import AlertDialog from '../common/AlertDialog/AlertDialog';
 import './AdminPanel.css';
 
@@ -18,6 +19,8 @@ const AdminPanel: React.FC = () => {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const brands = useSelector((state: RootState) => state.brands.brands);
 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filteredTypes, setFilteredTypes] = useState(types);
   const [pageSize, setPageSize] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -28,6 +31,15 @@ const AdminPanel: React.FC = () => {
     dispatch(fetchCategories());
     dispatch(fetchAllBrands());
   }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredTypes(
+      types.filter(type =>
+        [getCategoryName(type.categoryId), getBrandName(type.brandId), type.name]
+          .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    );
+  }, [searchTerm, types]);
 
   const handleAddType = () => {
     navigate('/create-type');
@@ -69,6 +81,10 @@ const AdminPanel: React.FC = () => {
     setTypeToDelete(null);
   };
 
+  const handleClearSearch = () => {
+    setSearchTerm('');
+  };
+
   const columns: GridColDef[] = [
     { field: 'category', headerName: 'Category', width: 150 },
     { field: 'brand', headerName: 'Brand', width: 250 },
@@ -91,7 +107,7 @@ const AdminPanel: React.FC = () => {
     },
   ];
 
-  const rows = types.map(type => ({
+  const rows = filteredTypes.map(type => ({
     id: type.id,
     category: getCategoryName(type.categoryId),
     brand: getBrandName(type.brandId),
@@ -119,6 +135,29 @@ const AdminPanel: React.FC = () => {
         <Button variant="contained" color="primary" onClick={handleEditSettings}>
           Edit Settings
         </Button>
+      </div>
+      <div className="search-bar-container">
+        <TextField
+          variant="outlined"
+          fullWidth
+          placeholder="Search by category, brand, or name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleClearSearch}>
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
       </div>
       <div className="table-container">
         <DataGrid
