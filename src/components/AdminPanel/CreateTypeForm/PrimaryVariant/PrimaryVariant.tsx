@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, Box, Typography, TextField } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, Box, TextField } from '@mui/material';
 import { ColorVariant } from '../../../../types';
 import './PrimaryVariant.css';
 

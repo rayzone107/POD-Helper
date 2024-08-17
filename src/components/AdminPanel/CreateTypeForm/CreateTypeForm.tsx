@@ -74,7 +74,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
 
   const handleSave = async () => {
     setSaving(true);
-    const typeId = mode === 'edit' ? id! : uuidv4(); // Generate unique ID for new type or use existing ID for edit
+    const typeId = mode === 'edit' ? id! : uuidv4();
 
     const updatedColorVariants = colorVariants.map((variant) => ({
       ...variant,
@@ -86,7 +86,6 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
       id: variant.id || uuidv4(),
     }));
 
-    // Upload images and get URLs
     const uploadImage = async (variant: any) => {
       if (variant.imageFile) {
         const storageRef = ref(storage, `types/${typeId}/variants/${variant.id}`);
@@ -117,7 +116,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
       if (mode === 'create') {
         setTimeout(() => {
           navigate('/admin');
-        }, 2000); // Navigate to admin page after 2 seconds
+        }, 2000);
       }
     });
   };

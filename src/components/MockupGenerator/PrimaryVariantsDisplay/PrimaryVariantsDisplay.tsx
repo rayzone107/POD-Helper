@@ -1,4 +1,3 @@
-// src/components/MockupGenerator/PrimaryVariantsDisplay/PrimaryVariantsDisplay.tsx
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';

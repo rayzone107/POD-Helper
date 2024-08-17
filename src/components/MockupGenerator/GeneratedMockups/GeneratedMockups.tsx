@@ -1,4 +1,3 @@
-// src/components/MockupGenerator/GeneratedMockups/GeneratedMockups.tsx
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Typography, Button, Slider } from '@mui/material';
@@ -74,8 +73,8 @@ const GeneratedMockups: React.FC = () => {
       if (!ctx) return;
 
       const group = mockupImages.slice(i * gridSize.horizontal * gridSize.vertical, (i + 1) * gridSize.horizontal * gridSize.vertical);
-      const numCols = Math.min(gridSize.horizontal, group.length); // Number of columns based on items in the group
-      const numRows = Math.ceil(group.length / gridSize.horizontal); // Number of rows
+      const numCols = Math.min(gridSize.horizontal, group.length);
+      const numRows = Math.ceil(group.length / gridSize.horizontal);
 
       canvas.width = numCols * 600;
       canvas.height = numRows * 650;
@@ -121,7 +120,6 @@ const GeneratedMockups: React.FC = () => {
 
               ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
 
-              // Draw text below the image
               ctx.fillStyle = '#000000';
               ctx.font = '40px Arial';
               ctx.textAlign = 'center';

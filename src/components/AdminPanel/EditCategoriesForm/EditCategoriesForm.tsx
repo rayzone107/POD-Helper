@@ -21,7 +21,7 @@ const EditCategoriesForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchCategories()); // Fetch categories when the component mounts
+    dispatch(fetchCategories());
   }, [dispatch]);
 
   const handleAddCategory = (categoryName: string) => {

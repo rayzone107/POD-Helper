@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 
 interface ReplaceImageDialogProps {
   open: boolean;

@@ -3,7 +3,7 @@ import { Container, Typography, Button, List, ListItem, ListItemText, IconButton
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
 import { fetchBrands, addBrand, updateBrand, deleteBrand } from '../../../redux/actions';
-import { Category, Brand } from '../../../types';
+import { Brand } from '../../../types';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SimpleInputDialog from '../../common/SimpleInputDialog/SimpleInputDialog';

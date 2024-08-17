@@ -1,4 +1,3 @@
-// src/redux/slices/settingsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface MockupGrid {

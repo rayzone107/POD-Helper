@@ -1,4 +1,3 @@
-// src/components/Home/Home.tsx
 import React from 'react';
 import { Grid, Container } from '@mui/material';
 import MockupGeneratorCard from './MockupGeneratorCard/MockupGeneratorCard';

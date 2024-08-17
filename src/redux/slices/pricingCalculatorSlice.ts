@@ -5,8 +5,8 @@ interface PricingCalculatorState {
   selectedCategory: string;
   selectedBrand: string;
   selectedType: Type | null;
-  profitPercentageEtsy: number;  // Separate profit percentage for Etsy
-  profitPercentageShopify: number; // Separate profit percentage for Shopify
+  profitPercentageEtsy: number;
+  profitPercentageShopify: number;
   runAdsOnEtsy: boolean;
   discountPercentageEtsy: number;
   discountPercentageShopify: number;
@@ -18,8 +18,8 @@ const initialState: PricingCalculatorState = {
   selectedCategory: '',
   selectedBrand: '',
   selectedType: null,
-  profitPercentageEtsy: 0, // Initialize Etsy profit percentage
-  profitPercentageShopify: 0, // Initialize Shopify profit percentage
+  profitPercentageEtsy: 0,
+  profitPercentageShopify: 0,
   runAdsOnEtsy: false,
   discountPercentageEtsy: 0,
   discountPercentageShopify: 0,
@@ -41,10 +41,10 @@ const pricingCalculatorSlice = createSlice({
       state.selectedType = action.payload;
     },
     setProfitPercentageEtsy(state, action: PayloadAction<number>) {
-      state.profitPercentageEtsy = action.payload;  // Set Etsy profit percentage
+      state.profitPercentageEtsy = action.payload;
     },
     setProfitPercentageShopify(state, action: PayloadAction<number>) {
-      state.profitPercentageShopify = action.payload; // Set Shopify profit percentage
+      state.profitPercentageShopify = action.payload;
     },
     setRunAdsOnEtsy(state, action: PayloadAction<boolean>) {
       state.runAdsOnEtsy = action.payload;

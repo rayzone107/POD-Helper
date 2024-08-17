@@ -14,8 +14,8 @@
 .primary-variant-image {
   position: relative;
   margin-top: 10px;
-  width: 400px; /* Set a fixed width or adjust as needed */
-  height: auto; /* Maintain aspect ratio */
+  width: 400px;
+  height: auto;
   border: 1px solid #ccc;
   display: flex;
   justify-content: center;
@@ -32,7 +32,7 @@
 .overlay-box {
   position: absolute;
   border: 2px solid red;
-  pointer-events: none; /* Ensure the box doesn't interfere with clicking the image */
+  pointer-events: none;
 }
 
 .overlay-box-coordinates {

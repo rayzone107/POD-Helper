@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
 import { setMockupSelectedCategory, setMockupSelectedBrand, setMockupSelectedType } from '../../redux/slices/mockupGeneratorSlice';
-import { Grid, FormControl, InputLabel, Select, MenuItem, Divider, Typography, Container } from '@mui/material';
+import { Divider, Typography, Container } from '@mui/material';
 import PrimaryVariantsDisplay from './PrimaryVariantsDisplay/PrimaryVariantsDisplay';
 import { APP_PADDING } from '../../utils/constants';
 import './MockupGenerator.css';

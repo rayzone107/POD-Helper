@@ -1,5 +1,3 @@
-// src/redux/slices/mockupGeneratorSlice.ts
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Type } from '../../types';
 

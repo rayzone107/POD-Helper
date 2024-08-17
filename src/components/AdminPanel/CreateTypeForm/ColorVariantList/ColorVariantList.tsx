@@ -24,7 +24,7 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
 
     const newVariants = await Promise.all(
       Array.from(bulkAddFiles).map(async (file) => {
-        const name = file.name.replace(/\.[^/.]+$/, ""); // Remove the file extension
+        const name = file.name.replace(/\.[^/.]+$/, "");
         const formattedName = name
           .split(/[\s_.-]+/)
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -51,7 +51,7 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
               const isDark = luminance < 0.5;
 
               resolve({
-                id: uuidv4(), // Ensure unique ID
+                id: uuidv4(),
                 name: formattedName,
                 hexColorCode,
                 isDark,
