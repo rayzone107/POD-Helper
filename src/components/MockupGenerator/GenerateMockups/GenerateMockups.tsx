@@ -16,15 +16,20 @@ const GenerateMockups: React.FC = () => {
   const navigate = useNavigate();
 
   const handleGenerateMockups = () => {
-    if (selectedType && lightVariantOverlay && darkVariantOverlay) {
-      const overlayCoords = {
-        startX: overlayPosition.x.toString(),
-        startY: overlayPosition.y.toString(),
-        endX: (overlayPosition.x + overlayPosition.width).toString(),
-        endY: (overlayPosition.y + overlayPosition.height).toString(),
-      };
-      const coordsQuery = new URLSearchParams(overlayCoords).toString();
-      navigate(`/generated-mockups?${coordsQuery}`);
+    if (selectedType) {
+      if (lightVariantOverlay && darkVariantOverlay) {
+        const overlayCoords = {
+          startX: overlayPosition.x.toString(),
+          startY: overlayPosition.y.toString(),
+          endX: (overlayPosition.x + overlayPosition.width).toString(),
+          endY: (overlayPosition.y + overlayPosition.height).toString(),
+        };
+        const coordsQuery = new URLSearchParams(overlayCoords).toString();
+        navigate(`/generated-mockups?${coordsQuery}`);
+      } else {
+        // Navigate without any overlay parameters if no overlays are provided
+        navigate('/generated-mockups');
+      }
     }
   };
 

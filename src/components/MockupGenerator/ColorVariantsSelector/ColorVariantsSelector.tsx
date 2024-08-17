@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
 import { setMockupSelectedColorVariants } from '../../../redux/slices/mockupGeneratorSlice';
@@ -10,12 +10,13 @@ const ColorVariantsSelector: React.FC = () => {
   const selectedType = useSelector((state: RootState) => state.mockupGenerator.selectedType);
   const selectedColorVariants = useSelector((state: RootState) => state.mockupGenerator.selectedColorVariants);
 
-  React.useEffect(() => {
-    if (selectedType) {
+  useEffect(() => {
+    if (selectedType && selectedColorVariants.length === 0) {
+      // Only set default selections if no variants are currently selected
       const allVariantIds = selectedType.colorVariants.map(variant => variant.id);
       dispatch(setMockupSelectedColorVariants(allVariantIds));
     }
-  }, [dispatch, selectedType]);
+  }, [dispatch, selectedType, selectedColorVariants.length]);
 
   const handleCheckboxChange = (id: string) => {
     if (selectedColorVariants.includes(id)) {
