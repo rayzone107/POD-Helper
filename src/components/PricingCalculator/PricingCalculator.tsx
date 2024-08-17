@@ -1,10 +1,19 @@
-// src/components/PricingCalculator/PricingCalculator.tsx
 import React, { useEffect } from 'react';
 import { Grid, TextField, Checkbox, FormControlLabel, Button, Typography, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
 import { fetchCategories, fetchAllBrands, fetchTypes, calculatePrices } from '../../redux/actions';
-import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercentage, setRunAdsOnEtsy, setDiscountPercentageEtsy, setDiscountPercentageShopify, resetPrices } from '../../redux/slices/pricingCalculatorSlice';
+import {
+  setSelectedCategory,
+  setSelectedBrand,
+  setSelectedType,
+  setProfitPercentageEtsy,
+  setProfitPercentageShopify,
+  setRunAdsOnEtsy,
+  setDiscountPercentageEtsy,
+  setDiscountPercentageShopify,
+  resetPrices,
+} from '../../redux/slices/pricingCalculatorSlice';
 import PricingTable from './PricingTable/PricingTable';
 import TypeSelector from '../common/TypeSelector/TypeSelector';
 import { APP_PADDING } from '../../utils/constants';
@@ -18,7 +27,8 @@ const PricingCalculator: React.FC = () => {
   const selectedCategory = useSelector((state: RootState) => state.pricingCalculator.selectedCategory);
   const selectedBrand = useSelector((state: RootState) => state.pricingCalculator.selectedBrand);
   const selectedType = useSelector((state: RootState) => state.pricingCalculator.selectedType);
-  const profitPercentage = useSelector((state: RootState) => state.pricingCalculator.profitPercentage);
+  const profitPercentageEtsy = useSelector((state: RootState) => state.pricingCalculator.profitPercentageEtsy);
+  const profitPercentageShopify = useSelector((state: RootState) => state.pricingCalculator.profitPercentageShopify);
   const runAdsOnEtsy = useSelector((state: RootState) => state.pricingCalculator.runAdsOnEtsy);
   const discountPercentageEtsy = useSelector((state: RootState) => state.pricingCalculator.discountPercentageEtsy);
   const discountPercentageShopify = useSelector((state: RootState) => state.pricingCalculator.discountPercentageShopify);
@@ -33,7 +43,8 @@ const PricingCalculator: React.FC = () => {
       
       try {
         const settings: AppSettings = await fetchSettings();
-        dispatch(setProfitPercentage(settings.defaultProfitPercentage));
+        dispatch(setProfitPercentageEtsy(settings.defaultProfitPercentage)); 
+        dispatch(setProfitPercentageShopify(settings.defaultProfitPercentage));
         dispatch(setDiscountPercentageEtsy(settings.defaultEtsySalePercentage));
         dispatch(setDiscountPercentageShopify(settings.defaultShopifySalePercentage));
       } catch (error) {
@@ -54,13 +65,25 @@ const PricingCalculator: React.FC = () => {
     dispatch(resetPrices());
   };
 
-  const handleTypeChange = (type: Type | null) => {
+  const handleTypeChange = async (type: Type | null) => {
     dispatch(setSelectedType(type));
     dispatch(resetPrices());
+
+    if (type) {
+      dispatch(calculatePrices());
+    }
   };
 
   const handleCalculate = () => {
     dispatch(calculatePrices());
+  };
+
+  const handleProfitPercentageChangeEtsy = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setProfitPercentageEtsy(parseFloat(e.target.value)));
+  };
+
+  const handleProfitPercentageChangeShopify = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setProfitPercentageShopify(parseFloat(e.target.value)));
   };
 
   return (
@@ -87,8 +110,8 @@ const PricingCalculator: React.FC = () => {
                   type="number"
                   fullWidth
                   className='input-field'
-                  value={profitPercentage}
-                  onChange={(e) => dispatch(setProfitPercentage(parseFloat(e.target.value)))}
+                  value={profitPercentageEtsy}
+                  onChange={handleProfitPercentageChangeEtsy}
                 />
                 <TextField
                   label="Discount % on Etsy"
@@ -120,8 +143,8 @@ const PricingCalculator: React.FC = () => {
                   type="number"
                   fullWidth
                   className='input-field'
-                  value={profitPercentage}
-                  onChange={(e) => dispatch(setProfitPercentage(parseFloat(e.target.value)))}
+                  value={profitPercentageShopify}
+                  onChange={handleProfitPercentageChangeShopify}
                 />
                 <TextField
                   label="Discount % on Shopify"

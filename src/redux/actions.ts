@@ -2,7 +2,7 @@ import { AppThunk, AppThunkDispatch, RootState } from './store';
 import { setCategories, addCategory as addCategoryAction, updateCategory as updateCategoryAction, deleteCategory as deleteCategoryAction } from './slices/categoriesSlice';
 import { setBrands, addBrand as addBrandAction, updateBrand as updateBrandAction, deleteBrand as deleteBrandAction } from './slices/brandsSlice';
 import { setTypes, deleteType as deleteTypeAction } from './slices/typesSlice';
-import { setSelectedCategory, setSelectedBrand, setSelectedType, setProfitPercentage, setRunAdsOnEtsy, setDiscountPercentageEtsy, setDiscountPercentageShopify, setEtsyPrices, setShopifyPrices } from './slices/pricingCalculatorSlice';
+import { setEtsyPrices, setShopifyPrices } from './slices/pricingCalculatorSlice';
 import { fetchCategoriesFromFirestore, fetchBrandsFromFirestore, fetchAllBrandsFromFirestore, fetchTypesFromFirestore } from '../services/firestoreService';
 import { Category, Brand, Type, PricingInfo } from '../types';
 import { db, collection, doc, setDoc, deleteDoc, getDoc, ref, deleteObject, storage } from '../services/firebaseConfig';
@@ -95,7 +95,7 @@ export const deleteType = (id: string): AppThunk => async (dispatch: AppThunkDis
 
 export const calculatePrices = (): AppThunk => (dispatch, getState) => {
   const state: RootState = getState();
-  const { selectedType, profitPercentage, runAdsOnEtsy, discountPercentageEtsy, discountPercentageShopify } = state.pricingCalculator;
+  const { selectedType, profitPercentageEtsy, profitPercentageShopify, runAdsOnEtsy, discountPercentageEtsy, discountPercentageShopify } = state.pricingCalculator;
 
   if (selectedType) {
     const etsyPrices: Record<string, PricingInfo> = {};
@@ -109,8 +109,8 @@ export const calculatePrices = (): AppThunk => (dispatch, getState) => {
     shopifyPrices['0% profit option'] = calculateShopifyPriceWithoutProfit(cheapestVariant.price, discountPercentageShopify);
 
     selectedType.sizeVariants.forEach(variant => {
-      etsyPrices[variant.name] = calculateEtsyPrice(variant.price, profitPercentage, discountPercentageEtsy, runAdsOnEtsy);
-      shopifyPrices[variant.name] = calculateShopifyPrice(variant.price, profitPercentage, discountPercentageShopify);
+      etsyPrices[variant.name] = calculateEtsyPrice(variant.price, profitPercentageEtsy, discountPercentageEtsy, runAdsOnEtsy);
+      shopifyPrices[variant.name] = calculateShopifyPrice(variant.price, profitPercentageShopify, discountPercentageShopify);
     });
 
     dispatch(setEtsyPrices(etsyPrices));

@@ -1,4 +1,3 @@
-// src/redux/slices/pricingCalculatorSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PricingInfo, Type } from '../../types';
 
@@ -6,7 +5,8 @@ interface PricingCalculatorState {
   selectedCategory: string;
   selectedBrand: string;
   selectedType: Type | null;
-  profitPercentage: number;
+  profitPercentageEtsy: number;  // Separate profit percentage for Etsy
+  profitPercentageShopify: number; // Separate profit percentage for Shopify
   runAdsOnEtsy: boolean;
   discountPercentageEtsy: number;
   discountPercentageShopify: number;
@@ -18,7 +18,8 @@ const initialState: PricingCalculatorState = {
   selectedCategory: '',
   selectedBrand: '',
   selectedType: null,
-  profitPercentage: 0,
+  profitPercentageEtsy: 0, // Initialize Etsy profit percentage
+  profitPercentageShopify: 0, // Initialize Shopify profit percentage
   runAdsOnEtsy: false,
   discountPercentageEtsy: 0,
   discountPercentageShopify: 0,
@@ -39,8 +40,11 @@ const pricingCalculatorSlice = createSlice({
     setSelectedType(state, action: PayloadAction<Type | null>) {
       state.selectedType = action.payload;
     },
-    setProfitPercentage(state, action: PayloadAction<number>) {
-      state.profitPercentage = action.payload;
+    setProfitPercentageEtsy(state, action: PayloadAction<number>) {
+      state.profitPercentageEtsy = action.payload;  // Set Etsy profit percentage
+    },
+    setProfitPercentageShopify(state, action: PayloadAction<number>) {
+      state.profitPercentageShopify = action.payload; // Set Shopify profit percentage
     },
     setRunAdsOnEtsy(state, action: PayloadAction<boolean>) {
       state.runAdsOnEtsy = action.payload;
@@ -68,7 +72,8 @@ export const {
   setSelectedCategory,
   setSelectedBrand,
   setSelectedType,
-  setProfitPercentage,
+  setProfitPercentageEtsy,
+  setProfitPercentageShopify,
   setRunAdsOnEtsy,
   setDiscountPercentageEtsy,
   setDiscountPercentageShopify,
