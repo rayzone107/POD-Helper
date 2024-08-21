@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../../redux/store';
 import { setMockupSelectedColorVariants } from '../../../redux/slices/mockupGeneratorSlice';
@@ -10,15 +10,17 @@ const ColorVariantsSelector: React.FC = () => {
   const selectedType = useSelector((state: RootState) => state.mockupGenerator.selectedType);
   const selectedColorVariants = useSelector((state: RootState) => state.mockupGenerator.selectedColorVariants);
 
+  const [userHasSelected, setUserHasSelected] = useState(false);
+
   useEffect(() => {
-    if (selectedType && selectedColorVariants.length === 0) {
-      // Only set default selections if no variants are currently selected
+    if (selectedType && !userHasSelected) {
       const allVariantIds = selectedType.colorVariants.map(variant => variant.id);
       dispatch(setMockupSelectedColorVariants(allVariantIds));
     }
-  }, [dispatch, selectedType, selectedColorVariants.length]);
+  }, [dispatch, selectedType, userHasSelected]);
 
   const handleCheckboxChange = (id: string) => {
+    setUserHasSelected(true);
     if (selectedColorVariants.includes(id)) {
       dispatch(setMockupSelectedColorVariants(selectedColorVariants.filter((variant) => variant !== id)));
     } else {
@@ -27,20 +29,24 @@ const ColorVariantsSelector: React.FC = () => {
   };
 
   const handleSelectAll = () => {
+    setUserHasSelected(true);
     const allVariantIds = selectedType?.colorVariants.map(variant => variant.id) || [];
     dispatch(setMockupSelectedColorVariants(allVariantIds));
   };
 
   const handleSelectNone = () => {
+    setUserHasSelected(true);
     dispatch(setMockupSelectedColorVariants([]));
   };
 
   const handleSelectDark = () => {
+    setUserHasSelected(true);
     const darkVariantIds = selectedType?.colorVariants.filter(variant => variant.isDark).map(variant => variant.id) || [];
     dispatch(setMockupSelectedColorVariants(darkVariantIds));
   };
 
   const handleSelectLight = () => {
+    setUserHasSelected(true);
     const lightVariantIds = selectedType?.colorVariants.filter(variant => !variant.isDark).map(variant => variant.id) || [];
     dispatch(setMockupSelectedColorVariants(lightVariantIds));
   };
