@@ -51,10 +51,12 @@ const ColorVariantsSelector: React.FC = () => {
     dispatch(setMockupSelectedColorVariants(lightVariantIds));
   };
 
+  const totalColorVariants = selectedType?.colorVariants.length || 0;
+
   return (
     <div className="color-variants-selector">
       <Typography variant="h6" gutterBottom>
-        Select Color Variants
+        Select Color Variants ({totalColorVariants} colors)
       </Typography>
       <div className="top-level-options">
         <Button variant="outlined" onClick={handleSelectAll}>Select All</Button>
