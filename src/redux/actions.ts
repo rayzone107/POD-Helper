@@ -95,7 +95,7 @@ export const deleteType = (id: string): AppThunk => async (dispatch: AppThunkDis
 
 export const calculatePrices = (): AppThunk => (dispatch, getState) => {
   const state: RootState = getState();
-  const { selectedType, profitPercentageEtsy, profitPercentageShopify, runAdsOnEtsy, discountPercentageEtsy, discountPercentageShopify } = state.pricingCalculator;
+  const { selectedType, profitPercentageEtsy, profitPercentageShopify, runAdsOnEtsy, discountPercentageEtsy, discountPercentageShopify, freeShippingEtsy, freeShippingShopify } = state.pricingCalculator;
 
   if (selectedType) {
     const etsyPrices: Record<string, PricingInfo> = {};
@@ -109,14 +109,29 @@ export const calculatePrices = (): AppThunk => (dispatch, getState) => {
     shopifyPrices['0% profit option'] = calculateShopifyPriceWithoutProfit(cheapestVariant.price, discountPercentageShopify);
 
     selectedType.sizeVariants.forEach(variant => {
-      etsyPrices[variant.name] = calculateEtsyPrice(variant.price, profitPercentageEtsy, discountPercentageEtsy, runAdsOnEtsy);
-      shopifyPrices[variant.name] = calculateShopifyPrice(variant.price, profitPercentageShopify, discountPercentageShopify);
+      etsyPrices[variant.name] = calculateEtsyPrice(
+        variant.price,
+        profitPercentageEtsy,
+        discountPercentageEtsy,
+        runAdsOnEtsy,
+        freeShippingEtsy,
+        variant.shippingCost
+      );
+      shopifyPrices[variant.name] = calculateShopifyPrice(
+        variant.price,
+        profitPercentageShopify,
+        discountPercentageShopify,
+        freeShippingShopify,
+        variant.shippingCost
+      );
     });
 
     dispatch(setEtsyPrices(etsyPrices));
     dispatch(setShopifyPrices(shopifyPrices));
   }
 };
+
+
 
 // Mockup Generator Actions
 export const setMockupSelectedCategoryAction = (category: string): AppThunk => (dispatch) => {

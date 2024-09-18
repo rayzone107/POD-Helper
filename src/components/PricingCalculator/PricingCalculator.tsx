@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, TextField, Checkbox, FormControlLabel, Button, Typography, Divider, IconButton } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
@@ -12,6 +12,8 @@ import {
   setRunAdsOnEtsy,
   setDiscountPercentageEtsy,
   setDiscountPercentageShopify,
+  setFreeShippingEtsy,
+  setFreeShippingShopify,
   resetPrices,
 } from '../../redux/slices/pricingCalculatorSlice';
 import PricingTable from './PricingTable/PricingTable';
@@ -35,6 +37,8 @@ const PricingCalculator: React.FC = () => {
   const runAdsOnEtsy = useSelector((state: RootState) => state.pricingCalculator.runAdsOnEtsy);
   const discountPercentageEtsy = useSelector((state: RootState) => state.pricingCalculator.discountPercentageEtsy);
   const discountPercentageShopify = useSelector((state: RootState) => state.pricingCalculator.discountPercentageShopify);
+  const freeShippingEtsy = useSelector((state: RootState) => state.pricingCalculator.freeShippingEtsy);
+  const freeShippingShopify = useSelector((state: RootState) => state.pricingCalculator.freeShippingShopify);
   const etsyPrices = useSelector((state: RootState) => state.pricingCalculator.etsyPrices);
   const shopifyPrices = useSelector((state: RootState) => state.pricingCalculator.shopifyPrices);
 
@@ -50,6 +54,8 @@ const PricingCalculator: React.FC = () => {
         dispatch(setProfitPercentageShopify(settings.defaultProfitPercentage));
         dispatch(setDiscountPercentageEtsy(settings.defaultEtsySalePercentage));
         dispatch(setDiscountPercentageShopify(settings.defaultShopifySalePercentage));
+        dispatch(setFreeShippingEtsy(settings.defaultFreeShippingEtsy));
+        dispatch(setFreeShippingShopify(settings.defaultFreeShippingShopify));
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
@@ -143,6 +149,16 @@ const PricingCalculator: React.FC = () => {
               label="Running Ads on Etsy"
               className="form-control-label"
             />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={freeShippingEtsy}
+                  onChange={(e) => dispatch(setFreeShippingEtsy(e.target.checked))}
+                />
+              }
+              label="Free Shipping"
+              className="form-control-label"
+            />
           </Grid>
           <Grid item xs={2} container justifyContent="center" alignItems="center" direction="column">
             <IconButton color="primary" onClick={handleCopyLeftToRight}>
@@ -175,6 +191,16 @@ const PricingCalculator: React.FC = () => {
               className="input-field"
               value={discountPercentageShopify}
               onChange={(e) => dispatch(setDiscountPercentageShopify(parseFloat(e.target.value)))}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={freeShippingShopify}
+                  onChange={(e) => dispatch(setFreeShippingShopify(e.target.checked))}
+                />
+              }
+              label="Free Shipping"
+              className="form-control-label"
             />
           </Grid>
           <Grid item xs={12}>

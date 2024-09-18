@@ -49,4 +49,5 @@ export interface PricingInfo {
   finalPrice: number;
   finalPriceRounded: number;
   afterDiscountPrice: number; 
+  shippingCost: number;
 }

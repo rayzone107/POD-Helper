@@ -10,6 +10,8 @@ interface PricingCalculatorState {
   runAdsOnEtsy: boolean;
   discountPercentageEtsy: number;
   discountPercentageShopify: number;
+  freeShippingEtsy: boolean;
+  freeShippingShopify: boolean;
   etsyPrices: Record<string, PricingInfo>;
   shopifyPrices: Record<string, PricingInfo>;
 }
@@ -23,6 +25,8 @@ const initialState: PricingCalculatorState = {
   runAdsOnEtsy: false,
   discountPercentageEtsy: 0,
   discountPercentageShopify: 0,
+  freeShippingEtsy: false,
+  freeShippingShopify: false,
   etsyPrices: {},
   shopifyPrices: {},
 };
@@ -55,6 +59,12 @@ const pricingCalculatorSlice = createSlice({
     setDiscountPercentageShopify(state, action: PayloadAction<number>) {
       state.discountPercentageShopify = action.payload;
     },
+    setFreeShippingEtsy(state, action: PayloadAction<boolean>) {
+      state.freeShippingEtsy = action.payload;
+    },
+    setFreeShippingShopify(state, action: PayloadAction<boolean>) {
+      state.freeShippingShopify = action.payload;
+    },
     setEtsyPrices(state, action: PayloadAction<Record<string, PricingInfo>>) {
       state.etsyPrices = action.payload;
     },
@@ -77,6 +87,8 @@ export const {
   setRunAdsOnEtsy,
   setDiscountPercentageEtsy,
   setDiscountPercentageShopify,
+  setFreeShippingEtsy,
+  setFreeShippingShopify,
   setEtsyPrices,
   setShopifyPrices,
   resetPrices,
