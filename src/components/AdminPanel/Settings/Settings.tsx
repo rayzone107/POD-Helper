@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, TextField, Slider, Button } from '@mui/material';
+import { Container, Typography, TextField, Slider, Button, Switch, FormControlLabel } from '@mui/material';
 import { fetchSettings, updateSettings } from '../../../services/settingsService';
 
 const Settings = () => {
@@ -9,6 +9,8 @@ const Settings = () => {
     defaultShopifySalePercentage: 0,
     mockupGridHorizontal: 0,
     mockupGridVertical: 0,
+    defaultFreeShippingEtsy: false,
+    defaultFreeShippingShopify: false,
   });
 
   useEffect(() => {
@@ -20,6 +22,8 @@ const Settings = () => {
         defaultShopifySalePercentage: fetchedSettings.defaultShopifySalePercentage,
         mockupGridHorizontal: fetchedSettings.mockupGrid.horizontal,
         mockupGridVertical: fetchedSettings.mockupGrid.vertical,
+        defaultFreeShippingEtsy: fetchedSettings.defaultFreeShippingEtsy,
+        defaultFreeShippingShopify: fetchedSettings.defaultFreeShippingShopify,
       });
     };
     loadSettings();
@@ -33,6 +37,10 @@ const Settings = () => {
     setSettings(prev => ({ ...prev, [name]: parseInt(event.target.value, 10) }));
   };
 
+  const handleSwitchChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSettings(prev => ({ ...prev, [name]: event.target.checked }));
+  };
+
   const handleSave = async () => {
     await updateSettings({
       defaultEtsySalePercentage: settings.defaultEtsySalePercentage,
@@ -42,6 +50,8 @@ const Settings = () => {
         horizontal: settings.mockupGridHorizontal,
         vertical: settings.mockupGridVertical,
       },
+      defaultFreeShippingEtsy: settings.defaultFreeShippingEtsy,
+      defaultFreeShippingShopify: settings.defaultFreeShippingShopify,
     });
   };
 
@@ -157,6 +167,29 @@ const Settings = () => {
           fullWidth
           margin="normal"
           inputProps={{ min: 1, max: 10 }}
+        />
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={settings.defaultFreeShippingEtsy}
+              onChange={handleSwitchChange('defaultFreeShippingEtsy')}
+            />
+          }
+          label="Default Free Shipping on Etsy"
+        />
+      </div>
+      <div style={{ marginBottom: '20px' }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={settings.defaultFreeShippingShopify}
+              onChange={handleSwitchChange('defaultFreeShippingShopify')}
+            />
+          }
+          label="Default Free Shipping on Shopify"
         />
       </div>
       <Button variant="contained" color="primary" onClick={handleSave}>

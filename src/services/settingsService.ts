@@ -8,6 +8,8 @@ export interface AppSettings {
     horizontal: number;
     vertical: number;
   };
+  defaultFreeShippingEtsy: boolean;    // New field
+  defaultFreeShippingShopify: boolean; // New field
 }
 
 export const fetchSettings = async (): Promise<AppSettings> => {
