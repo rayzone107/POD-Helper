@@ -27,6 +27,7 @@ const SizeVariantList: React.FC<SizeVariantListProps> = ({ sizeVariants, onEdit,
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Price</TableCell>
+              <TableCell>Shipping Cost</TableCell> {/* New column for shipping cost */}
               <TableCell>Edit</TableCell>
               <TableCell>Delete</TableCell>
             </TableRow>
@@ -34,7 +35,7 @@ const SizeVariantList: React.FC<SizeVariantListProps> = ({ sizeVariants, onEdit,
           <TableBody>
             {sizeVariants.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   No data yet
                 </TableCell>
               </TableRow>
@@ -43,6 +44,7 @@ const SizeVariantList: React.FC<SizeVariantListProps> = ({ sizeVariants, onEdit,
                 <TableRow key={variant.id}>
                   <TableCell>{variant.name}</TableCell>
                   <TableCell>{variant.price}</TableCell>
+                  <TableCell>{variant.shippingCost}</TableCell> {/* Display shipping cost */}
                   <TableCell>
                     <IconButton onClick={() => onEdit(variant)}>
                       <EditIcon />

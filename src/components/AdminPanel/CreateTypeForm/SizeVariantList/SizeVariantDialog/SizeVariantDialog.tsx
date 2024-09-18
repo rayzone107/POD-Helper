@@ -18,11 +18,13 @@ const SizeVariantDialog: React.FC<SizeVariantDialogProps> = ({
 }) => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState<number | string>('');
+  const [shippingCost, setShippingCost] = useState<number | string>(''); // New state for shipping cost
 
   useEffect(() => {
     if (variant) {
       setName(variant.name);
       setPrice(variant.price);
+      setShippingCost(variant.shippingCost || '');  // Initialize shipping cost
     }
   }, [variant]);
 
@@ -32,12 +34,14 @@ const SizeVariantDialog: React.FC<SizeVariantDialogProps> = ({
         ...variant,
         name,
         price: typeof price === 'string' ? parseFloat(price) : price,
+        shippingCost: typeof shippingCost === 'string' ? parseFloat(shippingCost) : shippingCost, // Save shipping cost
       });
     } else {
       onSave({
         id: '',
         name,
         price: typeof price === 'string' ? parseFloat(price) : price,
+        shippingCost: typeof shippingCost === 'string' ? parseFloat(shippingCost) : shippingCost, // Save shipping cost
       });
     }
     onClose();
@@ -63,6 +67,15 @@ const SizeVariantDialog: React.FC<SizeVariantDialogProps> = ({
           margin="normal"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+        />
+        <TextField
+          label="Shipping Cost"  // New field for shipping cost
+          type="number"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={shippingCost}
+          onChange={(e) => setShippingCost(e.target.value)}
         />
       </DialogContent>
       <DialogActions>

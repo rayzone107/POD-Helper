@@ -30,6 +30,7 @@ export interface SizeVariant {
   id: string;
   name: string;
   price: number;
+  shippingCost: number;
 }
 
 export interface ColorVariant {

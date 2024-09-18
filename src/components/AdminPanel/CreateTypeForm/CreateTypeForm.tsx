@@ -84,6 +84,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
     const updatedSizeVariants = sizeVariants.map((variant) => ({
       ...variant,
       id: variant.id || uuidv4(),
+      shippingCost: variant.shippingCost || 0,  // Ensure shippingCost is handled
     }));
 
     const uploadImage = async (variant: any) => {
@@ -132,18 +133,11 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
 
   const handleSaveColorVariant = (variant: any) => {
     if (editingColorVariant) {
-      // Update existing variant
       setColorVariants(colorVariants.map((v) => (v.id === editingColorVariant.id ? variant : v)));
     } else {
-      // Add new variant
       setColorVariants([...colorVariants, { ...variant, id: uuidv4() }]);
     }
     setOpenColorVariantDialog(false);
-  };
-
-  const handleAddColorVariant = () => {
-    setEditingColorVariant(null);
-    setOpenColorVariantDialog(true);
   };
 
   const handleBulkAddColorVariants = (newVariants: any[]) => {
@@ -161,18 +155,11 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
 
   const handleSaveSizeVariant = (variant: any) => {
     if (editingSizeVariant) {
-      // Update existing variant
       setSizeVariants(sizeVariants.map((v) => (v.id === editingSizeVariant.id ? variant : v)));
     } else {
-      // Add new variant
       setSizeVariants([...sizeVariants, { ...variant, id: uuidv4() }]);
     }
     setOpenSizeVariantDialog(false);
-  };
-
-  const handleAddSizeVariant = () => {
-    setEditingSizeVariant(null);
-    setOpenSizeVariantDialog(true);
   };
 
   return (
@@ -224,7 +211,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           colorVariants={colorVariants}
           onEdit={handleEditColorVariant}
           onDelete={handleDeleteColorVariant}
-          onAdd={handleAddColorVariant}
+          onAdd={() => setOpenColorVariantDialog(true)}
           onBulkAdd={handleBulkAddColorVariants}
         />
 
@@ -232,7 +219,7 @@ const CreateTypeForm: React.FC<CreateTypeFormProps> = ({ mode }) => {
           sizeVariants={sizeVariants}
           onEdit={handleEditSizeVariant}
           onDelete={handleDeleteSizeVariant}
-          onAdd={handleAddSizeVariant}
+          onAdd={() => setOpenSizeVariantDialog(true)}
         />
 
         <PrimaryVariant
