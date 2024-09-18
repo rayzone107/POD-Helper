@@ -1,5 +1,7 @@
+// src/components/AdminPanel/AdminPanel.tsx
+
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Button, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Container, Typography, Button, TextField, InputAdornment, IconButton, FormControlLabel, Checkbox } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
@@ -25,6 +27,7 @@ const AdminPanel: React.FC = () => {
   const [page, setPage] = useState<number>(0);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [typeToDelete, setTypeToDelete] = useState<string | null>(null);
+  const [showMissingShipping, setShowMissingShipping] = useState<boolean>(false); // New filter state
 
   useEffect(() => {
     dispatch(fetchTypes());
@@ -32,14 +35,24 @@ const AdminPanel: React.FC = () => {
     dispatch(fetchAllBrands());
   }, [dispatch]);
 
+  // Function to check if any size variant is missing shipping cost
+  const hasMissingShippingCost = (type: any) => {
+    return type.sizeVariants.some((variant: any) => !variant.shippingCost || variant.shippingCost === 0);
+  };
+
   useEffect(() => {
-    setFilteredTypes(
-      types.filter(type =>
-        [getCategoryName(type.categoryId), getBrandName(type.brandId), type.name]
-          .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
-    );
-  }, [searchTerm, types]);
+    // Filtering logic based on search term and missing shipping cost
+    const filtered = types.filter(type => {
+      const matchesSearch = [getCategoryName(type.categoryId), getBrandName(type.brandId), type.name]
+        .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesShippingFilter = !showMissingShipping || hasMissingShippingCost(type);
+
+      return matchesSearch && matchesShippingFilter;
+    });
+
+    setFilteredTypes(filtered);
+  }, [searchTerm, types, showMissingShipping]);
 
   const handleAddType = () => {
     navigate('/create-type');
@@ -159,6 +172,16 @@ const AdminPanel: React.FC = () => {
           }}
         />
       </div>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showMissingShipping}
+            onChange={(e) => setShowMissingShipping(e.target.checked)}
+          />
+        }
+        label="Show only items with missing shipping cost"
+        className="form-control-label"
+      />
       <div className="table-container">
         <DataGrid
           rows={rows}

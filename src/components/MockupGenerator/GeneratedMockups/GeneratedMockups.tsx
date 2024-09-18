@@ -66,71 +66,79 @@ const GeneratedMockups: React.FC = () => {
 
   const handleDownloadMockup = async () => {
     const totalGroups = Math.ceil(mockupImages.length / (gridSize.horizontal * gridSize.vertical));
-
+  
     for (let i = 0; i < totalGroups; i++) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
-
+  
       const group = mockupImages.slice(i * gridSize.horizontal * gridSize.vertical, (i + 1) * gridSize.horizontal * gridSize.vertical);
       const numCols = Math.min(gridSize.horizontal, group.length);
       const numRows = Math.ceil(group.length / gridSize.horizontal);
-
+  
       canvas.width = numCols * 600;
       canvas.height = numRows * 650;
-
+  
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+  
       for (let j = 0; j < group.length; j++) {
         const mockup = group[j];
         const img = new Image();
         img.crossOrigin = 'Anonymous';
         img.src = mockup.imageUrl;
-
+  
         await new Promise<void>(resolve => {
           img.onload = () => {
             const x = (j % gridSize.horizontal) * 600;
             const y = Math.floor(j / gridSize.horizontal) * 650;
             ctx.drawImage(img, x, y, 600, 600);
-
-            const overlayImg = new Image();
-            overlayImg.crossOrigin = 'Anonymous';
-            overlayImg.src = URL.createObjectURL(mockup.isDark ? (darkVariantOverlay || lightVariantOverlay!) : lightVariantOverlay!);
-
-            overlayImg.onload = () => {
-              const overlayWidth = overlayImg.width;
-              const overlayHeight = overlayImg.height;
-
-              const boundsWidth = ((overlayCoords.endX - overlayCoords.startX) / 500) * 600;
-              const boundsHeight = ((overlayCoords.endY - overlayCoords.startY) / 500) * 600;
-
-              const aspectRatio = overlayWidth / overlayHeight;
-              let displayWidth, displayHeight;
-              if (boundsWidth / boundsHeight > aspectRatio) {
-                displayHeight = boundsHeight;
-                displayWidth = boundsHeight * aspectRatio;
-              } else {
-                displayWidth = boundsWidth;
-                displayHeight = boundsWidth / aspectRatio;
+  
+            if (lightVariantOverlay || darkVariantOverlay) {
+              // Only attempt to create an overlay if one exists
+              const overlayFile = mockup.isDark ? darkVariantOverlay : lightVariantOverlay;
+              
+              if (overlayFile) {
+                const overlayImg = new Image();
+                overlayImg.crossOrigin = 'Anonymous';
+                overlayImg.src = URL.createObjectURL(overlayFile);
+  
+                overlayImg.onload = () => {
+                  const overlayWidth = overlayImg.width;
+                  const overlayHeight = overlayImg.height;
+  
+                  const boundsWidth = ((overlayCoords.endX - overlayCoords.startX) / 500) * 600;
+                  const boundsHeight = ((overlayCoords.endY - overlayCoords.startY) / 500) * 600;
+  
+                  const aspectRatio = overlayWidth / overlayHeight;
+                  let displayWidth, displayHeight;
+                  if (boundsWidth / boundsHeight > aspectRatio) {
+                    displayHeight = boundsHeight;
+                    displayWidth = boundsHeight * aspectRatio;
+                  } else {
+                    displayWidth = boundsWidth;
+                    displayHeight = boundsWidth / aspectRatio;
+                  }
+  
+                  const overlayLeft = (overlayCoords.startX / 500) * 600;
+                  const overlayTop = (overlayCoords.startY / 500) * 600;
+  
+                  ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
+                  URL.revokeObjectURL(overlayImg.src); // Clean up the object URL
+                };
               }
-
-              const overlayLeft = (overlayCoords.startX / 500) * 600;
-              const overlayTop = (overlayCoords.startY / 500) * 600;
-
-              ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
-
-              ctx.fillStyle = '#000000';
-              ctx.font = '40px Arial';
-              ctx.textAlign = 'center';
-              ctx.fillText(mockup.name, x + 300, y + 630);
-
-              resolve();
-            };
+            }
+  
+            ctx.fillStyle = '#000000';
+            ctx.font = '40px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(mockup.name, x + 300, y + 630);
+  
+            resolve();
           };
         });
       }
-
+  
       const link = document.createElement('a');
       link.download = `mockup_group_${i + 1}.png`;
       link.href = canvas.toDataURL('image/png');
