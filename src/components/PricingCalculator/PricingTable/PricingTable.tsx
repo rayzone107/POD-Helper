@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import './PricingTable.css';
 
 interface PricingTableProps {
-  prices: Record<string, { productionCost: number; profitAmount: number; profitPercentage: number; shippingCost: number; afterDiscountPrice: number; finalPriceRounded: number }>;
+  prices: Record<string, { productionCost: number; profitAmount: number; profitPercentage: number; shippingCost: number; afterDiscountPrice: number; finalPrice: number }>;
 }
 
 const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
@@ -18,7 +18,7 @@ const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
             <TableCell>Profit Percentage</TableCell>
             <TableCell>Shipping Cost</TableCell>
             <TableCell>Discounted Price</TableCell>
-            <TableCell className="rounded-price">.99 Pricing</TableCell>
+            <TableCell className="rounded-price">Final Pricing</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -32,7 +32,7 @@ const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
               <TableCell>${priceInfo.afterDiscountPrice.toFixed(2)}</TableCell>
               <TableCell className="rounded-price">
                 <Typography variant="h6" component="span">
-                  ${priceInfo.finalPriceRounded.toFixed(2)}
+                  ${priceInfo.finalPrice.toFixed(2)}
                 </Typography>
               </TableCell>
             </TableRow>
