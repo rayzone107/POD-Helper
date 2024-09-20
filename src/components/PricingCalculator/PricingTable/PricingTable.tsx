@@ -1,5 +1,7 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, IconButton } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './PricingTable.css';
 
 interface PricingTableProps {
@@ -7,6 +9,17 @@ interface PricingTableProps {
 }
 
 const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
+  const [copiedRow, setCopiedRow] = useState<string | null>(null);
+
+  const handleCopy = (price: number, rowKey: string) => {
+    navigator.clipboard.writeText(price.toFixed(2)).then(() => {
+      setCopiedRow(rowKey);
+      setTimeout(() => {
+        setCopiedRow(null); // Reset after 1 second
+      }, 1000);
+    });
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -34,6 +47,13 @@ const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
                 <Typography variant="h6" component="span">
                   ${priceInfo.finalPrice.toFixed(2)}
                 </Typography>
+                <IconButton onClick={() => handleCopy(priceInfo.finalPrice, size)}>
+                  {copiedRow === size ? (
+                    <CheckCircleIcon fontSize="small" style={{ color: 'green' }} />
+                  ) : (
+                    <ContentCopyIcon fontSize="small" style={{ color: 'green' }} />
+                  )}
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}

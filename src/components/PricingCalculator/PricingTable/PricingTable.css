@@ -3,3 +3,12 @@
   font-weight: bold;
   font-size: 1.2em;
 }
+
+.final-price-cell {
+  display: flex;
+  align-items: center;
+}
+
+.final-price-cell .MuiIconButton-root {
+  margin-left: 8px;
+}
