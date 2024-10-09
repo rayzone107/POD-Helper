@@ -15,9 +15,7 @@ interface SizeVariantListProps {
 const SizeVariantList: React.FC<SizeVariantListProps> = ({ sizeVariants, onEdit, onDelete, onAdd }) => {
   return (
     <div className="size-variant-list">
-      <Typography variant="h6" gutterBottom>
-        Size Variants
-      </Typography>
+      <h2>Size Variants</h2>
       <Button variant="contained" color="primary" onClick={onAdd} style={{ marginBottom: '20px' }}>
         Add Size Variant
       </Button>

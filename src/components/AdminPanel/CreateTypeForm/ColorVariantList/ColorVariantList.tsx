@@ -82,9 +82,7 @@ const ColorVariantList: React.FC<ColorVariantListProps> = ({ colorVariants, onEd
 
   return (
     <div className="color-variant-list">
-      <Typography variant="h6" gutterBottom>
-        Color Variants
-      </Typography>
+      <h2>Color Variants</h2>
       <Button variant="contained" color="primary" onClick={onAdd} style={{ marginBottom: '20px' }}>
         Add Color Variant
       </Button>

@@ -73,96 +73,99 @@ const PrimaryVariant: React.FC<PrimaryVariantProps> = ({
   };
 
   return (
-    <Box className="primary-variant-container">
-      <Box className="primary-variant-dropdown">
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Primary Light Variant</InputLabel>
-          <Select
-            value={primaryLightVariant}
-            onChange={(e) => setPrimaryLightVariant(e.target.value as string)}
-          >
-            {colorVariants.map((variant) => (
-              <MenuItem key={variant.id} value={variant.id}>
-                {variant.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box className="primary-variant-image">
-          {primaryLightVariant && (
-            <>
-              <img
-                ref={lightVariantImgRef}
-                src={colorVariants.find(variant => variant.id === primaryLightVariant)?.imageUrl}
-                alt="Primary Light Variant"
-              />
-              {renderOverlayBox(lightImageDims)}
-            </>
-          )}
+    <div>
+      <h2>Primary Variants</h2>
+      <Box className="primary-variant-container">
+        <Box className="primary-variant-dropdown">
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Primary Light Variant</InputLabel>
+            <Select
+              value={primaryLightVariant}
+              onChange={(e) => setPrimaryLightVariant(e.target.value as string)}
+            >
+              {colorVariants.map((variant) => (
+                <MenuItem key={variant.id} value={variant.id}>
+                  {variant.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box className="primary-variant-image">
+            {primaryLightVariant && (
+              <>
+                <img
+                  ref={lightVariantImgRef}
+                  src={colorVariants.find(variant => variant.id === primaryLightVariant)?.imageUrl}
+                  alt="Primary Light Variant"
+                />
+                {renderOverlayBox(lightImageDims)}
+              </>
+            )}
+          </Box>
+        </Box>
+        <Box className="primary-variant-dropdown">
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Primary Dark Variant</InputLabel>
+            <Select
+              value={primaryDarkVariant}
+              onChange={(e) => setPrimaryDarkVariant(e.target.value as string)}
+            >
+              {colorVariants.map((variant) => (
+                <MenuItem key={variant.id} value={variant.id}>
+                  {variant.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Box className="primary-variant-image">
+            {primaryDarkVariant && (
+              <>
+                <img
+                  ref={darkVariantImgRef}
+                  src={colorVariants.find(variant => variant.id === primaryDarkVariant)?.imageUrl}
+                  alt="Primary Dark Variant"
+                />
+                {renderOverlayBox(darkImageDims)}
+              </>
+            )}
+          </Box>
+        </Box>
+        <Box className="overlay-box-coordinates">
+          <TextField
+            label="Start X (%)"
+            type="number"
+            value={boundingOverlayBoxDimensions.startX}
+            onChange={(e) => handleInputChange('startX', e.target.value)}
+            margin="normal"
+            InputProps={{ inputProps: { min: 0, max: 100 } }}
+          />
+          <TextField
+            label="End X (%)"
+            type="number"
+            value={boundingOverlayBoxDimensions.endX}
+            onChange={(e) => handleInputChange('endX', e.target.value)}
+            margin="normal"
+            InputProps={{ inputProps: { min: 0, max: 100 } }}
+          />
+          <TextField
+            label="Start Y (%)"
+            type="number"
+            value={boundingOverlayBoxDimensions.startY}
+            onChange={(e) => handleInputChange('startY', e.target.value)}
+            margin="normal"
+            InputProps={{ inputProps: { min: 0, max: 100 } }}
+          />
+          <TextField
+            label="End Y (%)"
+            type="number"
+            value={boundingOverlayBoxDimensions.endY}
+            onChange={(e) => handleInputChange('endY', e.target.value)}
+            margin="normal"
+            InputProps={{ inputProps: { min: 0, max: 100 } }}
+          />
         </Box>
       </Box>
-      <Box className="primary-variant-dropdown">
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Primary Dark Variant</InputLabel>
-          <Select
-            value={primaryDarkVariant}
-            onChange={(e) => setPrimaryDarkVariant(e.target.value as string)}
-          >
-            {colorVariants.map((variant) => (
-              <MenuItem key={variant.id} value={variant.id}>
-                {variant.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box className="primary-variant-image">
-          {primaryDarkVariant && (
-            <>
-              <img
-                ref={darkVariantImgRef}
-                src={colorVariants.find(variant => variant.id === primaryDarkVariant)?.imageUrl}
-                alt="Primary Dark Variant"
-              />
-              {renderOverlayBox(darkImageDims)}
-            </>
-          )}
-        </Box>
-      </Box>
-      <Box className="overlay-box-coordinates">
-        <TextField
-          label="Start X (%)"
-          type="number"
-          value={boundingOverlayBoxDimensions.startX}
-          onChange={(e) => handleInputChange('startX', e.target.value)}
-          margin="normal"
-          InputProps={{ inputProps: { min: 0, max: 100 } }}
-        />
-        <TextField
-          label="End X (%)"
-          type="number"
-          value={boundingOverlayBoxDimensions.endX}
-          onChange={(e) => handleInputChange('endX', e.target.value)}
-          margin="normal"
-          InputProps={{ inputProps: { min: 0, max: 100 } }}
-        />
-        <TextField
-          label="Start Y (%)"
-          type="number"
-          value={boundingOverlayBoxDimensions.startY}
-          onChange={(e) => handleInputChange('startY', e.target.value)}
-          margin="normal"
-          InputProps={{ inputProps: { min: 0, max: 100 } }}
-        />
-        <TextField
-          label="End Y (%)"
-          type="number"
-          value={boundingOverlayBoxDimensions.endY}
-          onChange={(e) => handleInputChange('endY', e.target.value)}
-          margin="normal"
-          InputProps={{ inputProps: { min: 0, max: 100 } }}
-        />
-      </Box>
-    </Box>
+    </div>
   );
 };
 

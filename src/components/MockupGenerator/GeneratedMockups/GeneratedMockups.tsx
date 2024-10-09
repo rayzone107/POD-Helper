@@ -65,6 +65,16 @@ const GeneratedMockups: React.FC = () => {
   }, [mockupImages]);
 
   const handleDownloadMockup = async () => {
+    if (!lightVariantOverlay && !darkVariantOverlay) {
+      console.log("No overlay selected.");
+      return;
+    }
+  
+    const overlayImages = {
+      light: lightVariantOverlay ? await loadOverlayImage(lightVariantOverlay) : null,
+      dark: darkVariantOverlay ? await loadOverlayImage(darkVariantOverlay) : null,
+    };
+  
     const totalGroups = Math.ceil(mockupImages.length / (gridSize.horizontal * gridSize.vertical));
   
     for (let i = 0; i < totalGroups; i++) {
@@ -94,47 +104,40 @@ const GeneratedMockups: React.FC = () => {
             const y = Math.floor(j / gridSize.horizontal) * 650;
             ctx.drawImage(img, x, y, 600, 600);
   
-            if (lightVariantOverlay || darkVariantOverlay) {
-              // Only attempt to create an overlay if one exists
-              const overlayFile = mockup.isDark ? darkVariantOverlay : lightVariantOverlay;
-              
-              if (overlayFile) {
-                const overlayImg = new Image();
-                overlayImg.crossOrigin = 'Anonymous';
-                overlayImg.src = URL.createObjectURL(overlayFile);
+            let overlayAdded = false;
   
-                overlayImg.onload = () => {
-                  const overlayWidth = overlayImg.width;
-                  const overlayHeight = overlayImg.height;
+            const overlayImg = mockup.isDark ? overlayImages.dark : overlayImages.light;
   
-                  const boundsWidth = ((overlayCoords.endX - overlayCoords.startX) / 500) * 600;
-                  const boundsHeight = ((overlayCoords.endY - overlayCoords.startY) / 500) * 600;
+            if (overlayImg) {
+              const overlayWidth = overlayImg.width;
+              const overlayHeight = overlayImg.height;
   
-                  const aspectRatio = overlayWidth / overlayHeight;
-                  let displayWidth, displayHeight;
-                  if (boundsWidth / boundsHeight > aspectRatio) {
-                    displayHeight = boundsHeight;
-                    displayWidth = boundsHeight * aspectRatio;
-                  } else {
-                    displayWidth = boundsWidth;
-                    displayHeight = boundsWidth / aspectRatio;
-                  }
+              const boundsWidth = ((overlayCoords.endX - overlayCoords.startX) / 500) * 600;
+              const boundsHeight = ((overlayCoords.endY - overlayCoords.startY) / 500) * 600;
   
-                  const overlayLeft = (overlayCoords.startX / 500) * 600;
-                  const overlayTop = (overlayCoords.startY / 500) * 600;
-  
-                  ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
-                  URL.revokeObjectURL(overlayImg.src); // Clean up the object URL
-                };
+              const aspectRatio = overlayWidth / overlayHeight;
+              let displayWidth, displayHeight;
+              if (boundsWidth / boundsHeight > aspectRatio) {
+                displayHeight = boundsHeight;
+                displayWidth = boundsHeight * aspectRatio;
+              } else {
+                displayWidth = boundsWidth;
+                displayHeight = boundsWidth / aspectRatio;
               }
+  
+              const overlayLeft = (overlayCoords.startX / 500) * 600;
+              const overlayTop = (overlayCoords.startY / 500) * 600;
+  
+              ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
+              overlayAdded = true;
             }
+  
+            resolve();
   
             ctx.fillStyle = '#000000';
             ctx.font = '40px Arial';
             ctx.textAlign = 'center';
             ctx.fillText(mockup.name, x + 300, y + 630);
-  
-            resolve();
           };
         });
       }
@@ -145,7 +148,20 @@ const GeneratedMockups: React.FC = () => {
       link.click();
     }
   };
-
+  
+  const loadOverlayImage = (file: File): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const overlayImg = new Image();
+      overlayImg.crossOrigin = 'Anonymous';
+      overlayImg.src = URL.createObjectURL(file);
+      overlayImg.onload = () => {
+        URL.revokeObjectURL(overlayImg.src);
+        resolve(overlayImg);
+      };
+      overlayImg.onerror = (err) => reject(err);
+    });
+  };
+  
   return (
     <div>
       <Typography variant="h6" gutterBottom>
