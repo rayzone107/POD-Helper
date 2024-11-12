@@ -104,9 +104,19 @@ export const calculatePrices = (): AppThunk => (dispatch, getState) => {
     // Find the cheapest variant
     const cheapestVariant = selectedType.sizeVariants.reduce((prev, curr) => (prev.price < curr.price ? prev : curr));
 
-    // Calculate 0% profit price for the cheapest variant
-    etsyPrices['0% profit option'] = calculateEtsyPriceWithoutProfit(cheapestVariant.price, discountPercentageEtsy, runAdsOnEtsy);
-    shopifyPrices['0% profit option'] = calculateShopifyPriceWithoutProfit(cheapestVariant.price, discountPercentageShopify);
+    // Calculate 0% profit price for the cheapest variant, including shipping cost
+    etsyPrices['0% profit option'] = calculateEtsyPriceWithoutProfit(
+      cheapestVariant.price,
+      discountPercentageEtsy,
+      runAdsOnEtsy,
+      cheapestVariant.shippingCost
+    );
+
+    shopifyPrices['0% profit option'] = calculateShopifyPriceWithoutProfit(
+      cheapestVariant.price,
+      discountPercentageShopify,
+      cheapestVariant.shippingCost
+    );
 
     selectedType.sizeVariants.forEach(variant => {
       etsyPrices[variant.name] = calculateEtsyPrice(
