@@ -1,5 +1,6 @@
 import { roundTo99Cents } from '../utils/pricingCalculatorUtils';
 import { PricingInfo } from '../types';
+import { log } from 'console';
 
 export const calculateEtsyPrice = (
   productionCost: number,
@@ -66,24 +67,31 @@ export const calculateEtsyPriceWithoutProfit = (
   productionCost: number,
   discountPercentage: number,
   runAds: boolean,
-  shippingCost: number = 0 // Add shipping cost as a parameter with a default value of 0
+  shippingCost: number = 0
 ): PricingInfo => {
   const adsMarkup = runAds ? 0.15 : 0;
   const etsyFee = 0.065;
   const paymentProcessingFee = 0.03;
   const flatFee = 0.25;
-  const discountMultiplier = 1 - discountPercentage / 100;
-  
-  const basePrice = productionCost + shippingCost; // Include shipping cost in base price
+
+  // Base price includes production and shipping cost
+  const basePrice = productionCost + shippingCost;
+
+  // Calculate total fees on base price (no profit added)
   const totalFees = (basePrice * (adsMarkup + etsyFee + paymentProcessingFee)) + flatFee;
-  const finalPriceBeforeDiscount = basePrice + totalFees;
-  const afterDiscountPrice = finalPriceBeforeDiscount * discountMultiplier;
+
+  // Final price after all costs but without profit (this is the discounted price)
+  const afterDiscountPrice = basePrice + totalFees;
+
+  // Reverse-engineer to find the pre-discounted final price
+  const discountMultiplier = 1 - discountPercentage / 100;
+  const finalPriceBeforeDiscount = afterDiscountPrice / discountMultiplier;
 
   return {
     productionCost,
     profitAmount: 0,
     profitPercentage: 0,
-    shippingCost, // Include shipping cost in the result
+    shippingCost,
     finalPrice: finalPriceBeforeDiscount,
     afterDiscountPrice,
   };
@@ -92,21 +100,22 @@ export const calculateEtsyPriceWithoutProfit = (
 export const calculateShopifyPriceWithoutProfit = (
   productionCost: number,
   discountPercentage: number,
-  shippingCost: number = 0 // Add shipping cost as a parameter with a default value of 0
+  shippingCost: number = 0
 ): PricingInfo => {
+  // Base price includes production and shipping cost
+  const basePrice = productionCost + shippingCost;
+
+  // Discounted price is the total cost after discount (basePrice)
   const discountMultiplier = 1 - discountPercentage / 100;
-  
-  const basePrice = productionCost + shippingCost; // Include shipping cost in base price
-  const finalPriceBeforeDiscount = basePrice;
-  const afterDiscountPrice = finalPriceBeforeDiscount * discountMultiplier;
+  const finalPriceBeforeDiscount = basePrice / discountMultiplier;
+  const afterDiscountPrice = basePrice;
 
   return {
     productionCost,
     profitAmount: 0,
     profitPercentage: 0,
-    shippingCost, // Include shipping cost in the result
+    shippingCost,
     finalPrice: finalPriceBeforeDiscount,
     afterDiscountPrice,
   };
 };
-
