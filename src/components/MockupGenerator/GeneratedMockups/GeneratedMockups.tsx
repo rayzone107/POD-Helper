@@ -88,21 +88,35 @@ const GeneratedMockups: React.FC = () => {
         img.crossOrigin = 'Anonymous';
         img.src = mockup.imageUrl;
   
-        await new Promise<void>(resolve => {
+        // Wait for the main image to load and draw it
+        await new Promise<void>((resolve) => {
           img.onload = () => {
+            // Calculate position for each image
             const x = (j % gridSize.horizontal) * 600;
             const y = Math.floor(j / gridSize.horizontal) * 650;
-            ctx.drawImage(img, x, y, 600, 600);
+  
+            // Check if we are on the last row and if it has fewer items than the full row width
+            const isLastRow = Math.floor(j / gridSize.horizontal) === numRows - 1;
+            const itemsInLastRow = group.length % gridSize.horizontal || gridSize.horizontal;
+            let offsetX = 0;
+  
+            // Calculate horizontal offset for centering last row if needed
+            if (isLastRow && itemsInLastRow < gridSize.horizontal) {
+              offsetX = ((gridSize.horizontal - itemsInLastRow) * 600) / 2; // Center the row
+            }
+  
+            // Draw the main image and overlay if applicable
+            ctx.drawImage(img, x + offsetX, y, 600, 600);
   
             if (lightVariantOverlay || darkVariantOverlay) {
-              // Only attempt to create an overlay if one exists
               const overlayFile = mockup.isDark ? darkVariantOverlay : lightVariantOverlay;
-              
+  
               if (overlayFile) {
                 const overlayImg = new Image();
                 overlayImg.crossOrigin = 'Anonymous';
                 overlayImg.src = URL.createObjectURL(overlayFile);
   
+                // Wait for the overlay to load and draw it
                 overlayImg.onload = () => {
                   const overlayWidth = overlayImg.width;
                   const overlayHeight = overlayImg.height;
@@ -123,28 +137,42 @@ const GeneratedMockups: React.FC = () => {
                   const overlayLeft = (overlayCoords.startX / 500) * 600;
                   const overlayTop = (overlayCoords.startY / 500) * 600;
   
-                  ctx.drawImage(overlayImg, x + overlayLeft, y + overlayTop, displayWidth, displayHeight);
+                  ctx.drawImage(overlayImg, x + overlayLeft + offsetX, y + overlayTop, displayWidth, displayHeight);
                   URL.revokeObjectURL(overlayImg.src); // Clean up the object URL
+                  resolve(); // Complete the overlay drawing
                 };
+  
+                overlayImg.onerror = () => {
+                  console.error('Failed to load overlay image');
+                  resolve(); // Resolve to ensure the loop continues
+                };
+              } else {
+                resolve(); // No overlay file, resolve immediately
               }
+            } else {
+              resolve(); // No overlays, resolve immediately
             }
   
             ctx.fillStyle = '#000000';
             ctx.font = '40px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(mockup.name, x + 300, y + 630);
+            ctx.fillText(mockup.name, x + offsetX + 300, y + 630);
+          };
   
-            resolve();
+          img.onerror = () => {
+            console.error('Failed to load main image');
+            resolve(); // Resolve to ensure the loop continues
           };
         });
       }
   
+      // Save the current canvas to a file
       const link = document.createElement('a');
       link.download = `mockup_group_${i + 1}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
-  };
+  };  
 
   return (
     <div>
