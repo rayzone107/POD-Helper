@@ -45,8 +45,8 @@ export interface ColorVariant {
 export interface PricingInfo {
   productionCost: number;
   profitAmount: number;
-  profitPercentage: number;
   finalPrice: number;
-  afterDiscountPrice: number; 
+  netCost: number;
+  afterDiscountPrice: number;
   shippingCost: number;
 }

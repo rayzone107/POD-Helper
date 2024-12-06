@@ -1,3 +1,4 @@
+// Updated src/components/PricingCalculator/PricingTable/PricingTable.tsx
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, IconButton } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -5,7 +6,17 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import './PricingTable.css';
 
 interface PricingTableProps {
-  prices: Record<string, { productionCost: number; profitAmount: number; profitPercentage: number; shippingCost: number; afterDiscountPrice: number; finalPrice: number }>;
+  prices: Record<
+    string,
+    {
+      productionCost: number;
+      profitAmount: number;
+      shippingCost: number;
+      netCost: number;
+      afterDiscountPrice: number;
+      finalPrice: number;
+    }
+  >;
 }
 
 const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
@@ -28,35 +39,37 @@ const PricingTable: React.FC<PricingTableProps> = ({ prices }) => {
             <TableCell>Size Variant</TableCell>
             <TableCell>Production Cost</TableCell>
             <TableCell>Profit Amount</TableCell>
-            <TableCell>Profit Percentage</TableCell>
             <TableCell>Shipping Cost</TableCell>
+            <TableCell>Net Cost</TableCell>
             <TableCell>Discounted Price</TableCell>
             <TableCell className="rounded-price">Final Pricing</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.entries(prices).map(([size, priceInfo]) => (
-            <TableRow key={size}>
-              <TableCell>{size}</TableCell>
-              <TableCell>${priceInfo.productionCost.toFixed(2)}</TableCell>
-              <TableCell>${priceInfo.profitAmount.toFixed(2)}</TableCell>
-              <TableCell>{priceInfo.profitPercentage.toFixed(2)}%</TableCell>
-              <TableCell>${priceInfo.shippingCost.toFixed(2)}</TableCell>
-              <TableCell>${priceInfo.afterDiscountPrice.toFixed(2)}</TableCell>
-              <TableCell className="rounded-price">
-                <Typography variant="h6" component="span">
-                  ${priceInfo.finalPrice.toFixed(2)}
-                </Typography>
-                <IconButton onClick={() => handleCopy(priceInfo.finalPrice, size)}>
-                  {copiedRow === size ? (
-                    <CheckCircleIcon fontSize="small" style={{ color: 'green' }} />
-                  ) : (
-                    <ContentCopyIcon fontSize="small" style={{ color: 'green' }} />
-                  )}
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
+          {Object.entries(prices).map(([size, priceInfo]) => {
+            return (
+              <TableRow key={size}>
+                <TableCell>{size}</TableCell>
+                <TableCell>${priceInfo.productionCost.toFixed(2)}</TableCell>
+                <TableCell>${priceInfo.profitAmount.toFixed(2)}</TableCell>
+                <TableCell>${priceInfo.shippingCost.toFixed(2)}</TableCell>
+                <TableCell>${priceInfo.netCost.toFixed(2)}</TableCell> {/* Display Net Cost */}
+                <TableCell>${priceInfo.afterDiscountPrice.toFixed(2)}</TableCell>
+                <TableCell className="rounded-price">
+                  <Typography variant="h6" component="span">
+                    ${priceInfo.finalPrice.toFixed(2)}
+                  </Typography>
+                  <IconButton onClick={() => handleCopy(priceInfo.finalPrice, size)}>
+                    {copiedRow === size ? (
+                      <CheckCircleIcon fontSize="small" style={{ color: 'green' }} />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" style={{ color: 'green' }} />
+                    )}
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>

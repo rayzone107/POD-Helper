@@ -109,6 +109,7 @@ export const calculatePrices = (): AppThunk => (dispatch, getState) => {
       cheapestVariant.price,
       discountPercentageEtsy,
       runAdsOnEtsy,
+      freeShippingEtsy,
       cheapestVariant.shippingCost
     );
 
