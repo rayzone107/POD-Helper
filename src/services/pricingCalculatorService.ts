@@ -1,5 +1,6 @@
 import { roundTo99Cents } from '../utils/pricingCalculatorUtils';
 import { PricingInfo } from '../types';
+import { ETSY_ADS_MARKUP_PERCENT, ETSY_FEE_PERCENT, ETSY_FLAT_FEE, ETSY_PAYMENT_PROCESSING_FEE_PERCENT, ETSY_REGULATORY_OPERATING_FEE_PERCENT, ETSY_TAX_RATE_PERCENT } from '../utils/constants';
 
 export const calculateEtsyPrice = (
   productionCost: number,
@@ -9,12 +10,12 @@ export const calculateEtsyPrice = (
   freeShipping: boolean,
   shippingCost: number = 0
 ): PricingInfo => {
-  const adsMarkup = runAds ? 0.15 : 0;
-  const etsyFeeRate = 0.065;
-  const paymentProcessingFeeRate = 0.03;
-  const regulatoryOperatingFeeRate = 0.0115;
-  const taxRate = 1.13; // HST (13%)
-  const flatFee = 0.25;
+  const adsMarkup = runAds ? ETSY_ADS_MARKUP_PERCENT : 0;
+  const etsyFeeRate = ETSY_FEE_PERCENT;
+  const paymentProcessingFeeRate = ETSY_PAYMENT_PROCESSING_FEE_PERCENT;
+  const regulatoryOperatingFeeRate = ETSY_REGULATORY_OPERATING_FEE_PERCENT;
+  const taxRate = ETSY_TAX_RATE_PERCENT;
+  const flatFee = ETSY_FLAT_FEE;
 
   const discountMultiplier = 1 - discountPercentage / 100;
 
@@ -77,12 +78,12 @@ export const calculateEtsyPriceWithoutProfit = (
   freeShipping: boolean,
   shippingCost: number = 0
 ): PricingInfo => {
-  const adsMarkup = runAds ? 0.15 : 0;
-  const etsyFeeRate = 0.065;
-  const paymentProcessingFeeRate = 0.03;
-  const regulatoryOperatingFeeRate = 0.0115;
-  const taxRate = 1.13; // HST (13%)
-  const flatFee = 0.25;
+  const adsMarkup = runAds ? ETSY_ADS_MARKUP_PERCENT : 0;
+  const etsyFeeRate = ETSY_FEE_PERCENT;
+  const paymentProcessingFeeRate = ETSY_PAYMENT_PROCESSING_FEE_PERCENT;
+  const regulatoryOperatingFeeRate = ETSY_REGULATORY_OPERATING_FEE_PERCENT;
+  const taxRate = ETSY_TAX_RATE_PERCENT;
+  const flatFee = ETSY_FLAT_FEE;
 
   const discountMultiplier = 1 - discountPercentage / 100;
 
