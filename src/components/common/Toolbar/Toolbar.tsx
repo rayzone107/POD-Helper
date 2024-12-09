@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ImageIcon from '@mui/icons-material/Image';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './Toolbar.css';
 
@@ -33,6 +34,9 @@ const Toolbar: React.FC<ToolbarProps> = ({ showBackButton }) => {
         </Link>
         <Link to="/mockup-generator" className="toolbar-link">
           <Button color="inherit" startIcon={<ImageIcon />}>Mockup Generator</Button>
+        </Link>
+        <Link to="/product-list" className="toolbar-link">
+          <Button color="inherit" startIcon={<ListAltIcon />}>Product List</Button>
         </Link>
       </MuiToolbar>
     </AppBar>

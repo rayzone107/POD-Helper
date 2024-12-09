@@ -76,3 +76,9 @@ export interface PricingInfo {
   afterDiscountPrice: number;
   breakdown?: FeeBreakdown | null; // Nullable for Shopify or other cases
 }
+
+interface Shop {
+  id: number;
+  title: string;
+  sales_channel: string;
+}
