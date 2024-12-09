@@ -60,17 +60,19 @@ export const generateMockups = async (
     const canvas = createCanvas(2000, 2000);
     const ctx = canvas.getContext('2d');
     const subImages = images.slice(i, i + 9);
-
+  
     for (let j = 0; j < subImages.length; j++) {
       const image = await loadImage(subImages[j].dataUrl);
       const x = (j % 3) * 666;
       const y = Math.floor(j / 3) * 666;
-
+  
       ctx.drawImage(image, x, y, 600, 600);
     }
-
+  
     const buffer = canvas.toBuffer('image/png');
-    const blob = arrayBufferToBlob(buffer, 'image/png');
+    // Convert Node.js Buffer to ArrayBuffer
+    const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+    const blob = arrayBufferToBlob(arrayBuffer, 'image/png');
     saveAs(blob, `mockups_${i / 9 + 1}.png`);
-  }
+  }  
 };

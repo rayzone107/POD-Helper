@@ -30,7 +30,7 @@ export const calculateEtsyPrice = (
 
   // Step 1: Calculate Subtotal
   const profitAmount = productionCost * (profitPercentage / 100);
-  const baseAmount = productionCost + (freeShipping ? shippingCost : 0);
+  const baseAmount = productionCost + (freeShipping ? shippingCost : 0) + profitAmount;
 
   // Step 2: First Pass Calculations
   const etsyFees = baseAmount * etsyFeeRate;
@@ -65,7 +65,7 @@ export const calculateEtsyPrice = (
   console.log("firstPassTotalAmount: ", firstPassTotalAmount);
 
   // Step 3: Second Pass Calculations
-  const secondPassBaseAmount = productionCost + shippingCost + firstPassTotalFees;
+  const secondPassBaseAmount = productionCost + shippingCost + profitAmount + firstPassTotalFees;
   console.log("secondPassBaseAmount: ", secondPassBaseAmount);
   const recalculatedEtsyFees = secondPassBaseAmount * etsyFeeRate;
   console.log("2nd pass etsy fees: ", recalculatedEtsyFees);
@@ -102,7 +102,7 @@ export const calculateEtsyPrice = (
   const netCost = productionCost + shippingCost + secondPassTotalFees;
 
   // Step 5: Final Before-Discount Price
-  const finalBeforeDiscount = baseAmount + profitAmount + secondPassTotalFees;
+  const finalBeforeDiscount = baseAmount + secondPassTotalFees;
 
   // Step 6: Apply Rounding
   const roundedDiscountedPrice = roundTo99Cents(finalBeforeDiscount);
@@ -112,8 +112,9 @@ export const calculateEtsyPrice = (
 
   // Step 7: Construct Breakdown
   const breakdown: FeeBreakdown = {
-    productionCost,
+    productionCost: productionCost,
     shippingCost: freeShipping ? shippingCost : 0,
+    profitAmount: profitAmount,
     firstPass: {
       etsyFees,
       etsyTaxes,
@@ -142,7 +143,7 @@ export const calculateEtsyPrice = (
       totalFees: secondPassTotalFees,
       totalAmount: secondPassTotalAmount,
     },
-    netCost,
+    netCost: netCost,
   };
 
   return {
@@ -223,6 +224,7 @@ export const calculateEtsyPriceWithoutProfit = (
   const breakdown: FeeBreakdown = {
     productionCost,
     shippingCost: freeShipping ? shippingCost : 0,
+    profitAmount: 0,
     firstPass: {
       etsyFees,
       etsyTaxes,

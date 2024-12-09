@@ -61,6 +61,7 @@ export interface FeePassDetails {
 export interface FeeBreakdown {
   productionCost: number;
   shippingCost: number;
+  profitAmount: number;
   firstPass: FeePassDetails;
   secondPass: FeePassDetails;
   netCost: number; // Final net cost after two passes

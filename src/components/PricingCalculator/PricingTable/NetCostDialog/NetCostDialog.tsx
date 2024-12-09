@@ -134,9 +134,15 @@ const NetCostDialog: React.FC<NetCostDialogProps> = ({ open, onClose, breakdown 
         </Table>
       </TableContainer>
       <Typography variant="body2" style={{ marginTop: '8px' }}>
-        <strong>Total Amount After Fees:</strong> ${netProductionCost.toFixed(2)} + $
+        <strong>Total Net Cost After Fees:</strong> ${netProductionCost.toFixed(2)} + $
         {pass.totalFees.toFixed(2)} = ${(
           netProductionCost + pass.totalFees
+        ).toFixed(2)}
+      </Typography>
+      <Typography variant="body2" style={{ marginTop: '8px' }}>
+        <strong>Total Pre-Sale Amount After Fees:</strong> ${netProductionCost.toFixed(2)} + $
+        {pass.totalFees.toFixed(2)} = ${(
+          netProductionCost + breakdown.profitAmount + pass.totalFees
         ).toFixed(2)}
       </Typography>
     </>
@@ -154,21 +160,25 @@ const NetCostDialog: React.FC<NetCostDialogProps> = ({ open, onClose, breakdown 
             <strong>Shipping Cost:</strong> ${breakdown.shippingCost.toFixed(2)}
           </Typography>
           <Typography variant="body1">
-            <strong>Total Production Cost:</strong> $
-            {(breakdown.productionCost + breakdown.shippingCost).toFixed(2)}
+            <strong>Net Profit:</strong> $
+            {breakdown.profitAmount.toFixed(2)}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Base Amount:</strong> $
+            {(breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount).toFixed(2)}
           </Typography>
         </Box>
 
         {renderPassTable(
           'First Pass Calculations',
           breakdown.firstPass,
-          breakdown.productionCost + breakdown.shippingCost,
+          breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount,
           breakdown.productionCost + breakdown.shippingCost
         )}
         {renderPassTable(
           'Second Pass Calculations',
           breakdown.secondPass,
-          breakdown.productionCost + breakdown.shippingCost + breakdown.firstPass.totalFees,
+          breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount + breakdown.firstPass.totalFees,
           breakdown.productionCost + breakdown.shippingCost
         )}
 
