@@ -1,0 +1,29 @@
+/* src/components/PricingCalculator/PricingTable/NetCostDialog/NetCostDialog.css */
+.MuiDialogContent-root {
+    padding: 16px 24px;
+  }
+  
+  .MuiDialogTitle-root {
+    font-weight: bold;
+    padding: 16px 24px;
+  }
+  
+  .MuiTableHead-root th {
+    font-weight: bold;
+  }
+  
+  .MuiTableCell-root {
+    padding: 8px 16px;
+    white-space: pre-line; /* For new lines in the calculation column */
+  }
+  
+  .MuiTypography-h6 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .MuiButton-root {
+    display: block;
+    margin: 0 auto;
+  }
+  

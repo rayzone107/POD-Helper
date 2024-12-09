@@ -42,11 +42,36 @@ export interface ColorVariant {
   isDark: boolean;
 }
 
+export interface FeePassDetails {
+  etsyFees: number;
+  etsyTaxes: number;
+  paymentProcessingFees: number;
+  paymentProcessingTaxes: number;
+  regulatoryOperatingFees: number;
+  regulatoryOperatingTaxes: number;
+  flatFee: number;
+  listingFee: number;
+  totalBaseFees: number;
+  totalTaxes: number;
+  totalFees: number;
+  totalAmount: number;
+}
+
+// Represents a detailed fee breakdown
+export interface FeeBreakdown {
+  productionCost: number;
+  shippingCost: number;
+  firstPass: FeePassDetails;
+  secondPass: FeePassDetails;
+  netCost: number; // Final net cost after two passes
+}
+
 export interface PricingInfo {
   productionCost: number;
   profitAmount: number;
-  finalPrice: number;
-  netCost: number;
-  afterDiscountPrice: number;
   shippingCost: number;
+  netCost: number;
+  finalPrice: number;
+  afterDiscountPrice: number;
+  breakdown?: FeeBreakdown | null; // Nullable for Shopify or other cases
 }

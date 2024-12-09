@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, enableIndexedDbPersistence, query, where, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -15,7 +15,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-enableIndexedDbPersistence(db);
+enableMultiTabIndexedDbPersistence(db).catch((err) => {
+  if (err.code === 'failed-precondition') {
+    console.error(
+      'Multiple tabs open. Persistence can only be enabled in one tab at a time if multi-tab synchronization is not supported.'
+    );
+  } else if (err.code === 'unimplemented') {
+    console.error(
+      'The current browser does not support all features required for persistence.'
+    );
+  }
+});
 
 const storage = getStorage(app);
 
