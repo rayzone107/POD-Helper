@@ -1,4 +1,3 @@
-// src/components/PricingCalculator/PricingTable/NetCostDialog/NetCostDialog.tsx
 import React from 'react';
 import {
   Dialog,
@@ -13,7 +12,12 @@ import {
   Typography,
   Button,
   Box,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import './NetCostDialog.css';
 import { FeeBreakdown } from '../../../../types';
 
 interface NetCostDialogProps {
@@ -46,13 +50,9 @@ const NetCostDialog: React.FC<NetCostDialogProps> = ({ open, onClose, breakdown 
   const renderPassTable = (
     title: string,
     pass: FeeBreakdown['firstPass' | 'secondPass'],
-    baseAmount: number,
-    netProductionCost: number
+    baseAmount: number
   ) => (
     <>
-      <Typography variant="h6" style={{ marginTop: '16px' }}>
-        {title}
-      </Typography>
       <TableContainer>
         <Table>
           <TableHead>
@@ -133,24 +133,61 @@ const NetCostDialog: React.FC<NetCostDialogProps> = ({ open, onClose, breakdown 
           </TableBody>
         </Table>
       </TableContainer>
-      <Typography variant="body2" style={{ marginTop: '8px' }}>
-        <strong>Total Net Cost After Fees:</strong> ${netProductionCost.toFixed(2)} + $
-        {pass.totalFees.toFixed(2)} = ${(
-          netProductionCost + pass.totalFees
-        ).toFixed(2)}
+      <Typography variant="h6" className="summary-title">
+        Summary
       </Typography>
-      <Typography variant="body2" style={{ marginTop: '8px' }}>
-        <strong>Total Pre-Sale Amount After Fees:</strong> ${netProductionCost.toFixed(2)} + $
-        {pass.totalFees.toFixed(2)} = ${(
-          netProductionCost + breakdown.profitAmount + pass.totalFees
-        ).toFixed(2)}
-      </Typography>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Item</TableCell>
+              <TableCell>Explanation</TableCell>
+              <TableCell>
+                <strong>Total</strong>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell>Total Net Cost After Fees</TableCell>
+              <TableCell>(Production Cost + Shipping Cost + Total Fees)</TableCell>
+              <TableCell>
+                <strong>
+                  $
+                  {(
+                    breakdown.productionCost +
+                    breakdown.shippingCost +
+                    pass.totalFees
+                  ).toFixed(2)}
+                </strong>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Total Pre-Sale Amount After Fees</TableCell>
+              <TableCell>
+                (Production Cost + Shipping Cost + Profit + Total Fees)
+              </TableCell>
+              <TableCell>
+                <strong>
+                  $
+                  {(
+                    breakdown.productionCost +
+                    breakdown.shippingCost +
+                    breakdown.profitAmount +
+                    pass.totalFees
+                  ).toFixed(2)}
+                </strong>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Net Cost Breakdown</DialogTitle>
+      <DialogTitle className="dialog-title">Net Cost Breakdown</DialogTitle>
       <DialogContent>
         <Box marginBottom={2}>
           <Typography variant="body1">
@@ -168,27 +205,40 @@ const NetCostDialog: React.FC<NetCostDialogProps> = ({ open, onClose, breakdown 
             {(breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount).toFixed(2)}
           </Typography>
         </Box>
-
-        {renderPassTable(
-          'First Pass Calculations',
-          breakdown.firstPass,
-          breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount,
-          breakdown.productionCost + breakdown.shippingCost
-        )}
-        {renderPassTable(
-          'Second Pass Calculations',
-          breakdown.secondPass,
-          breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount + breakdown.firstPass.totalFees,
-          breakdown.productionCost + breakdown.shippingCost
-        )}
-
-        <Box marginTop={2}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">First Pass Calculations</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {renderPassTable(
+              'First Pass Calculations',
+              breakdown.firstPass,
+              breakdown.productionCost + breakdown.shippingCost + breakdown.profitAmount
+            )}
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6">Second Pass Calculations</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {renderPassTable(
+              'Second Pass Calculations',
+              breakdown.secondPass,
+              breakdown.productionCost +
+                breakdown.shippingCost +
+                breakdown.profitAmount +
+                breakdown.firstPass.totalFees
+            )}
+          </AccordionDetails>
+        </Accordion>
+        <Box className="net-cost-box">
           <Typography variant="h6">
             <strong>Total Net Cost:</strong> ${breakdown.netCost.toFixed(2)}
           </Typography>
         </Box>
       </DialogContent>
-      <Button onClick={onClose} style={{ margin: '16px' }} variant="contained" color="primary">
+      <Button onClick={onClose} className="close-button" variant="contained" color="primary">
         Close
       </Button>
     </Dialog>
