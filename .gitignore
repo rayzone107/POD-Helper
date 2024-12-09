@@ -24,3 +24,4 @@ yarn-error.log*
 
 # Backend - Printify
 backendPrintify/node_modules
+backendPrintify/dist
