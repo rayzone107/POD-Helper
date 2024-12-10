@@ -1,18 +1,16 @@
 export const roundTo99Cents = (price: number): number => {
-  const integerPart = Math.floor(price);
-  const decimalPart = price - integerPart;
+  const onesDigit = Math.floor(price) % 10;
 
-  if (integerPart % 10 === 0 || integerPart % 10 === 1) {
-    if (decimalPart <= 0.75) {
-      return integerPart - 0.01;
-    } else {
-      return integerPart + 0.99;
-    }
-  } else {
-    if (decimalPart <= 0.20) {
-      return integerPart - 0.01;
-    } else {
-      return integerPart + 0.99;
-    }
+  // If the price already ends in .99, return it as is
+  if (price % 1 === 0.99) {
+    return price;
   }
+
+  // If the ones digit is 0, round down
+  if (onesDigit === 0) {
+    return Math.floor(price) - 0.01;
+  }
+
+  // Otherwise, round up
+  return Math.floor(price) + 0.99;
 };
