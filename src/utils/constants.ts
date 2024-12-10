@@ -7,3 +7,6 @@ export const ETSY_REGULATORY_OPERATING_FEE_PERCENT = 0.0115;
 export const ETSY_ADS_MARKUP_PERCENT = 0.15;
 export const ETSY_TAX_RATE_PERCENT = 0.13;
 export const ETSY_FLAT_FEE = 0.25;
+
+export const ETSY_FINAL_FEE_PERCENT = 0.1516;
+export const ETSY_FINAL_FLAT_FEE = 0.5085;
