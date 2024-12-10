@@ -14,7 +14,6 @@ export const calculateEtsyPrice = (
   freeShipping: boolean,
   shippingCost: number = 0
 ): PricingInfo => {
-  const flatFee = ETSY_FINAL_FLAT_FEE;
   const adsMarkup = runAds ? ETSY_ADS_MARKUP_PERCENT : 0;
   const discountMultiplier = 1 - discountPercentage / 100;
 
@@ -25,7 +24,7 @@ export const calculateEtsyPrice = (
   const baseAmount = productionCost + (freeShipping ? shippingCost : 0) + profitAmount;
 
   // Step 3: Total Etsy Fees
-  const etsyFees = baseAmount * (ETSY_FINAL_FEE_PERCENT + adsMarkup) + flatFee;
+  const etsyFees = baseAmount * (ETSY_FINAL_FEE_PERCENT + adsMarkup) + ETSY_FINAL_FLAT_FEE;
 
   // Step 4: Net Cost (Production Cost + Shipping Cost + Etsy Fees)
   const netCost = baseAmount + etsyFees;
@@ -58,7 +57,6 @@ export const calculateEtsyPriceWithoutProfit = (
   freeShipping: boolean,
   shippingCost: number = 0
 ): PricingInfo => {
-  const flatFee = ETSY_FINAL_FLAT_FEE;
   const adsMarkup = runAds ? ETSY_ADS_MARKUP_PERCENT : 0;
   const discountMultiplier = 1 - discountPercentage / 100;
 
@@ -66,7 +64,7 @@ export const calculateEtsyPriceWithoutProfit = (
   const baseAmount = productionCost + (freeShipping ? shippingCost : 0);
 
   // Total Etsy Fees
-  const etsyFees = baseAmount * (ETSY_FINAL_FEE_PERCENT + adsMarkup) + flatFee;
+  const etsyFees = baseAmount * (ETSY_FINAL_FEE_PERCENT + adsMarkup) + ETSY_FINAL_FLAT_FEE;
 
   // Net Cost (Production Cost + Shipping Cost + Etsy Fees)
   const netCost = baseAmount + etsyFees;
