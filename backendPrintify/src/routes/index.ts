@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { getShops } from '../api/shops/controllers/shops.controller';
+import shopsRoutes from './shops.routes';
 
 const router = Router();
 
-router.get('/', getShops);
+// Mount the `/shops` route
+router.use('/shops', shopsRoutes);
 
 export default router;
