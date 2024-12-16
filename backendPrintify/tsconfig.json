@@ -3,11 +3,16 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../", // Set to include the shared directory
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true, // This will suppress missing type errors for third-party libraries
-    "typeRoots": ["./node_modules/@types"]
+    "skipLibCheck": true,
+    "baseUrl": ".", // Useful for absolute imports
+    "paths": {
+      "*": ["./*"],
+      "shared/*": ["../shared/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../shared/**/*", "../src/utils/endpoints"],
+  "exclude": ["node_modules", "dist"]
 }

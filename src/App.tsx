@@ -12,6 +12,7 @@ import { CssBaseline, Container } from '@mui/material';
 import { styled } from '@mui/system';
 import Settings from './components/AdminPanel/Settings/Settings';
 import ProductListPage from './pages/ProductListPage';
+import ProductDetail from './components/ProductsList/ProductDetail/ProductDetail';
 
 const ToolbarOffset = styled('div')({
   height: '64px', // Manually setting the height
@@ -34,6 +35,7 @@ const App: React.FC = () => {
           <Route path="/mockup-generator" element={<MockupGeneratorPage />} />
           <Route path="/generated-mockups" element={<GeneratedMockupsPage />} />
           <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/" element={<HomePage />} />
         </Routes>
       </Container>

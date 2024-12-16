@@ -1,13 +1,12 @@
 import { Router } from 'express';
-import { getShops } from '../api/shops/controllers/shops.controller';
-import { getProducts } from '../api/shops/controllers/products.controller';
+import { getProductById, getProducts } from '../api/shops/controllers/products.controller';
 
 const router = Router();
 
-// Route for shops
-router.get('/', getShops);
+// Route for fetching all products
+router.get('/products', getProducts);
 
-// Route for products in a specific shop
-router.get('/:shop_id/products', getProducts);
+// Route for fetching a single product by ID
+router.get('/products/:productId', getProductById);
 
 export default router;

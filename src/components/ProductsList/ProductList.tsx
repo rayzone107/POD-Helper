@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Product } from '../../types/Product'; // Adjust the import path as needed
-import './ProductList.css'; // Add custom styles here
+import ProductListItem from './ProductListItem/ProductListItem';
+import SearchBar from '../common/SearchBar/SearchBar';
+import { Product } from 'shared/types/Product';
+import './ProductList.css';
+import { ENDPOINTS } from '../../utils/endpoints/endpoints';
 
 const ProductList: React.FC = () => {
-  const ETSY_SHOP_ID = '15816012'; // Replace with your shop ID or fetch from constants
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get<{ data: Product[] }>(
-          `http://localhost:5000/api/shops/${ETSY_SHOP_ID}/products`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.REACT_APP_PRINTIFY_ACCESS_TOKEN}`,
-            },
-          }
-        );
-        setProducts(response.data.data);
+        const response = await axios.get<{ products: Product[] }>(ENDPOINTS.PRODUCTS);
+        setProducts(response.data.products);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch products.');
@@ -31,24 +27,33 @@ const ProductList: React.FC = () => {
     fetchProducts();
   }, []);
 
-  if (loading) return <div>Loading products...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const handleSearch = (term: string) => {
+    const lowerCaseTerm = term.toLowerCase();
+    const filtered = products.filter((product) =>
+      product.title.toLowerCase().includes(lowerCaseTerm)
+    );
+    setFilteredProducts(filtered);
+  };
 
   return (
     <div className="product-list">
       <h1>Products</h1>
-      <div className="product-grid">
-        {products.map((product) => (
-          <div key={product.id} className="product-card">
-            <img
-              src={product.images[0]?.src || '/placeholder.png'}
-              alt={product.title}
-              className="product-image"
-            />
-            <h2 className="product-title">{product.title}</h2>
-          </div>
-        ))}
-      </div>
+      <SearchBar 
+        onSearch={handleSearch} 
+        placeholder="Search products by title..." 
+        debounceDelay={500} 
+      />
+      {loading ? (
+        <div className="loader"></div>
+      ) : error ? (
+        <div>Error: {error}</div>
+      ) : (
+        <div className="product-grid">
+          {filteredProducts.map((product) => (
+            <ProductListItem key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
