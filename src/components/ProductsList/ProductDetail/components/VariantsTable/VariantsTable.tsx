@@ -22,11 +22,21 @@ const VariantsTable: React.FC<VariantsTableProps> = ({ product, updatedPrices })
       return acc;
     }, {} as Record<number, typeof product.variants>);
 
-  const calculateRange = (variants: typeof product.variants, field: 'cost' | 'price') => {
-    const values = variants.map((v) => v[field] / 100);
-    return `${Math.min(...values).toFixed(2)} - ${Math.max(...values).toFixed(2)}`;
-  };
-
+    const calculateRange = (variants: typeof product.variants, field: 'cost' | 'price' | 'updatedPrice') => {
+      const values = variants.map((v) => {
+        if (field === 'updatedPrice') {
+          return updatedPrices[v.id] || 0; // No division required here
+        }
+        return v[field] / 100; // Divide only for cost and price
+      });
+    
+      const min = Math.min(...values).toFixed(2);
+      const max = Math.max(...values).toFixed(2);
+    
+      // If min and max are the same, return a single value
+      return min === max ? `${min}` : `${min} - ${max}`;
+    };
+    
   return (
     <div className="variants-section">
       <h2 className="variants-title">Variants</h2>
@@ -46,10 +56,7 @@ const VariantsTable: React.FC<VariantsTableProps> = ({ product, updatedPrices })
             const sizeName = sizeMap[Number(sizeId)] || 'Unknown Size';
             const costRange = calculateRange(variants, 'cost');
             const priceRange = calculateRange(variants, 'price');
-            const updatedPriceRange = calculateRange(
-              variants.map((v) => ({ ...v, cost: updatedPrices[v.id] || v.cost })),
-              'cost'
-            );
+            const updatedPriceRange = calculateRange(variants, 'updatedPrice');
 
             return (
               <React.Fragment key={sizeId}>

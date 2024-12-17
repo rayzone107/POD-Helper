@@ -59,72 +59,32 @@
   margin-bottom: 5px;
 }
 
-/* Shipping Table */
-.shipping-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  font-size: 1rem;
+
+/* Margin at Bottom */
+.bottom-margin {
+  height: 100px;
 }
 
-.shipping-table th,
-.shipping-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
+/* Pricing Configuration Section */
+.pricing-configurations {
+  margin: 20px 0;
 }
 
-.shipping-table th {
-  background-color: #f5f5f5;
+.config-title {
+  margin-bottom: 20px;
   font-weight: bold;
 }
 
-.shipping-table td {
-  background-color: #fafafa;
-}
-
-/* Variants Table */
-.variants-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 2rem;
-  font-size: 1rem;
-}
-
-.variants-table th,
-.variants-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.variants-table th {
-  background-color: #f5f5f5;
-}
-
-.collapsible-row {
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.variant-row {
-  background-color: #f9f9f9;
-}
-
-.color-display {
+.config-inputs {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.color-circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1px solid #ddd;
+.config-inputs .MuiTextField-root {
+  flex: 1;
 }
 
-/* Margin at Bottom */
-.bottom-margin {
-  height: 100px;
+.config-inputs button {
+  height: 40px;
 }
