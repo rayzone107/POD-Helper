@@ -1,14 +1,25 @@
+// React and Core Imports
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ENDPOINTS } from '../../../utils/endpoints/endpoints';
-import { Product } from 'shared/types/Product';
-import './ProductDetail.css';
+
+// Third-Party Libraries
+import axios from 'axios';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
-import axios from 'axios';
 import { ArrowBack, ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+
+// Shared Types and Utilities
+import { ENDPOINTS } from 'src/utils/endpoints/endpoints';
+import { Product } from 'shared/types/Product';
 import { ShippingProfile } from 'src/types';
+
+// Local Components
+import ShippingTable from './components/ShippingTable/ShippingTable';
+import VariantsTable from './components/VariantsTable/VariantsTable';
+
+// Styles
+import './ProductDetail.css';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -131,25 +142,7 @@ const ProductDetail: React.FC = () => {
         </AccordionSummary>
         <AccordionDetails>
           {shippingInfo && shippingInfo.length > 0 ? (
-            <table className="shipping-table">
-              <thead>
-                <tr>
-                  <th>Location</th>
-                  <th>Cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                {shippingInfo.map((profile, index) => (
-                  <tr key={index}>
-                    <td>{profile.countries.join(', ').replace(/_/g, ' ')}</td>
-                    <td>
-                      ${profile.first_item.cost / 100} (First Item), $
-                      {profile.additional_items.cost / 100} (Additional Items)
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <ShippingTable shippingInfo={shippingInfo} />
           ) : (
             <Typography>No shipping information available.</Typography>
           )}
@@ -158,85 +151,7 @@ const ProductDetail: React.FC = () => {
 
       {/* Variants Table */}
       <h2>Variants</h2>
-      <table className="variants-table">
-        <thead>
-          <tr>
-            <th>Size</th>
-            <th>Colors</th>
-            <th>Cost</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          {product.options
-            ?.find((option) => option.type === 'size')
-            ?.values.map((sizeOption) => {
-              const sizeVariants = product.variants.filter(
-                (variant) =>
-                  variant.options.includes(sizeOption.id) && variant.is_enabled
-              );
-
-              if (sizeVariants.length === 0) return null;
-
-              const costRange = `${Math.min(...sizeVariants.map((v) => v.cost)) / 100} - ${
-                Math.max(...sizeVariants.map((v) => v.cost)) / 100
-              }`;
-              const priceRange = `${Math.min(...sizeVariants.map((v) => v.price)) / 100} - ${
-                Math.max(...sizeVariants.map((v) => v.price)) / 100
-              }`;
-
-              return (
-                <React.Fragment key={sizeOption.id}>
-                  <tr
-                    className="collapsible-row"
-                    onClick={() =>
-                      setExpandedSize((prev) =>
-                        prev === sizeOption.id ? null : sizeOption.id
-                      )
-                    }
-                  >
-                    <td>{sizeOption.title}</td>
-                    <td>{sizeVariants.length}</td>
-                    <td>${costRange}</td>
-                    <td>${priceRange}</td>
-                  </tr>
-                  {expandedSize === sizeOption.id &&
-                    sizeVariants.map((variant) => {
-                      const colorId = variant.options.find((optionId) =>
-                        product.options
-                          .find((option) => option.type === 'color')
-                          ?.values.some((value) => value.id === optionId)
-                      );
-                      const colorValue = product.options
-                        .find((option) => option.type === 'color')
-                        ?.values.find((value) => value.id === colorId);
-
-                      return (
-                        <tr key={variant.id} className="variant-row">
-                          <td>{sizeOption.title}</td>
-                          <td>
-                            <div className="color-display">
-                              <div
-                                className="color-circle"
-                                style={{
-                                  backgroundColor:
-                                    colorValue?.colors?.[0] || '#cccccc',
-                                }}
-                              ></div>
-                              <span>{colorValue?.title || 'Unknown'}</span>
-                            </div>
-                          </td>
-                          <td>${(variant.cost / 100).toFixed(2)}</td>
-                          <td>${(variant.price / 100).toFixed(2)}</td>
-                        </tr>
-                      );
-                    })}
-                </React.Fragment>
-              );
-            })}
-        </tbody>
-      </table>
-      <div className="bottom-margin"></div>
+      <VariantsTable product={product} />
     </div>
   );
 };

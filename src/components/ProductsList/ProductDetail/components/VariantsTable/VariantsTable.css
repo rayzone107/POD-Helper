@@ -1,0 +1,35 @@
+.variants-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+  }
+  
+  .variants-table th,
+  .variants-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .collapsible-row {
+    cursor: pointer;
+    background-color: #f5f5f5;
+  }
+  
+  .variant-row {
+    background-color: #f9f9f9;
+  }
+  
+  .color-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .color-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+  }
+  
