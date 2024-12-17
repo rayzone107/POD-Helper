@@ -77,8 +77,14 @@ export interface PricingInfo {
   breakdown?: FeeBreakdown | null; // Nullable for Shopify or other cases
 }
 
-interface Shop {
-  id: number;
-  title: string;
-  sales_channel: string;
+export interface ShippingProfile {
+  countries: string[];
+  first_item: {
+    cost: number;
+    currency: string;
+  };
+  additional_items: {
+    cost: number;
+    currency: string;
+  };
 }

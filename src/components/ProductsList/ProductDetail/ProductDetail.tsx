@@ -7,6 +7,8 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import axios from 'axios';
 import { ArrowBack, ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+import { ShippingProfile } from 'src/types';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +17,8 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedSize, setExpandedSize] = useState<number | null>(null);
-  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [shippingInfo, setShippingInfo] = useState<ShippingProfile[] | null>(null);
+  const [shippingError, setShippingError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -31,6 +34,23 @@ const ProductDetail: React.FC = () => {
 
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    const fetchShippingInfo = async () => {
+      if (!product) return;
+  
+      try {
+        const response = await axios.get<{ profiles: ShippingProfile[] }>(
+          `${ENDPOINTS.SHIPPING_INFO(product.blueprint_id, product.print_provider_id)}`
+        );
+        setShippingInfo(response.data.profiles);
+      } catch (err) {
+        setShippingError('Failed to fetch shipping info: ' + err);
+      }
+    };
+  
+    if (product) fetchShippingInfo();
+  }, [product]);  
 
   if (loading) return <div className="loader"></div>;
   if (error) return <div>Error: {error}</div>;
@@ -70,23 +90,23 @@ const ProductDetail: React.FC = () => {
         ))}
       </Carousel>
 
-      {/* Product Description */}
-      <div className="product-description-container">
-        <div
-          className="description-header"
-          onClick={() => setDescriptionExpanded((prev) => !prev)}
+      {/* Product Description - Full Content */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMore />}
+          aria-controls="description-content"
+          id="description-header"
         >
-          <h2>Description</h2>
-          <ExpandMore
-            className={`expand-icon ${
-              descriptionExpanded ? 'expanded' : ''
-            }`}
-          />
-        </div>
-        {descriptionExpanded && (
-          <p className="product-description">{product.description}</p>
-        )}
-      </div>
+          <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+            Description
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography style={{ whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+            {product.description}
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
 
       {/* Blueprint and Print Provider IDs */}
       <div className="product-meta">
@@ -97,6 +117,44 @@ const ProductDetail: React.FC = () => {
           <strong>Print Provider ID:</strong> {product.print_provider_id}
         </p>
       </div>
+
+      {/* Shipping Info */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMore />}
+          aria-controls="shipping-info-content"
+          id="shipping-info-header"
+        >
+          <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+            Shipping Info
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {shippingInfo && shippingInfo.length > 0 ? (
+            <table className="shipping-table">
+              <thead>
+                <tr>
+                  <th>Location</th>
+                  <th>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {shippingInfo.map((profile, index) => (
+                  <tr key={index}>
+                    <td>{profile.countries.join(', ').replace(/_/g, ' ')}</td>
+                    <td>
+                      ${profile.first_item.cost / 100} (First Item), $
+                      {profile.additional_items.cost / 100} (Additional Items)
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <Typography>No shipping information available.</Typography>
+          )}
+        </AccordionDetails>
+      </Accordion>
 
       {/* Variants Table */}
       <h2>Variants</h2>
