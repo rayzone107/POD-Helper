@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import axios from 'axios';
 import { BASE_URL, PRINTIFY_ACCESS_TOKEN } from '../../../config/config';
 import { Product } from 'shared/types/Product';
+import { ShippingDetailsResponse } from '../types/shops.types';
 
 const HEADERS = {
   Authorization: `Bearer ${PRINTIFY_ACCESS_TOKEN}`,
@@ -41,7 +42,7 @@ export const getShippingDetails = async (req: Request, res: Response) => {
   const { blueprintId, printProviderId } = req.params;
 
   try {
-    const response = await axios.get(
+    const response = await axios.get<ShippingDetailsResponse>(
       `https://api.printify.com/v1/catalog/blueprints/${blueprintId}/print_providers/${printProviderId}/shipping.json`,
       {
         headers: {
@@ -50,7 +51,9 @@ export const getShippingDetails = async (req: Request, res: Response) => {
       }
     );
 
-    res.json(response.data);
+    const { profiles } = response.data;
+
+    res.json(profiles);
   } catch (error: any) {
     console.error('Error fetching shipping details:', error.message);
     if (error.response) {

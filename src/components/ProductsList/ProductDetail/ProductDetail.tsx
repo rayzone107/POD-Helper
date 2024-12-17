@@ -1,25 +1,17 @@
-// React and Core Imports
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-
-// Third-Party Libraries
-import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/endpoints/endpoints';
+import { Product } from 'shared/types/Product';
+import './ProductDetail.css';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+import axios from 'axios';
 import { ArrowBack, ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
-
-// Shared Types and Utilities
-import { ENDPOINTS } from 'src/utils/endpoints/endpoints';
-import { Product } from 'shared/types/Product';
+import { Accordion, AccordionDetails, AccordionSummary, Typography, TextField, Button } from '@mui/material';
 import { ShippingProfile } from 'src/types';
-
-// Local Components
 import ShippingTable from './components/ShippingTable/ShippingTable';
 import VariantsTable from './components/VariantsTable/VariantsTable';
-
-// Styles
-import './ProductDetail.css';
+import { calculateEtsyPrice } from '../../../services/pricingCalculatorService';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,9 +19,13 @@ const ProductDetail: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedSize, setExpandedSize] = useState<number | null>(null);
-  const [shippingInfo, setShippingInfo] = useState<ShippingProfile[] | null>(null);
+  const [shippingInfo, setShippingInfo] = useState<ShippingProfile[]>([]);
   const [shippingError, setShippingError] = useState<string | null>(null);
+
+  // Configurable pricing values
+  const [profitPercentage, setProfitPercentage] = useState<number>(10); // Default from Firestore
+  const [discountPercentage, setDiscountPercentage] = useState<number>(0); // Default from Firestore
+  const [updatedPrices, setUpdatedPrices] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -49,19 +45,48 @@ const ProductDetail: React.FC = () => {
   useEffect(() => {
     const fetchShippingInfo = async () => {
       if (!product) return;
-  
+
       try {
-        const response = await axios.get<{ profiles: ShippingProfile[] }>(
+        const response = await axios.get<ShippingProfile[]>(
           `${ENDPOINTS.SHIPPING_INFO(product.blueprint_id, product.print_provider_id)}`
         );
-        setShippingInfo(response.data.profiles);
+        setShippingInfo(response.data);
       } catch (err) {
         setShippingError('Failed to fetch shipping info: ' + err);
       }
     };
-  
+
     if (product) fetchShippingInfo();
-  }, [product]);  
+  }, [product]);
+
+  const handleCalculatePrices = () => {
+    if (!product || !shippingInfo) return;
+
+    const usShippingCost = Math.max(
+      ...shippingInfo
+        .filter((profile) => profile.countries.includes('US'))
+        .map((profile) => profile.first_item.cost)
+    );
+
+    const prices: Record<string, number> = {};
+
+    product.variants.forEach((variant) => {
+      const productionCost = variant.cost / 100;
+
+      const { afterDiscountPrice } = calculateEtsyPrice(
+        productionCost,
+        profitPercentage,
+        discountPercentage,
+        false, // runAds
+        true, // freeShipping
+        usShippingCost / 100
+      );
+
+      prices[variant.id] = afterDiscountPrice;
+    });
+
+    setUpdatedPrices(prices);
+  };
 
   if (loading) return <div className="loader"></div>;
   if (error) return <div>Error: {error}</div>;
@@ -74,10 +99,27 @@ const ProductDetail: React.FC = () => {
         <span>Back to all products</span>
       </div>
 
-      {/* Product Title */}
       <h1 className="product-title">{product.title}</h1>
 
-      {/* Image Carousel */}
+      {/* Configurations for Price */}
+      <div className="pricing-configurations">
+        <TextField
+          label="Profit Percentage"
+          type="number"
+          value={profitPercentage}
+          onChange={(e) => setProfitPercentage(parseFloat(e.target.value))}
+        />
+        <TextField
+          label="Discount Percentage"
+          type="number"
+          value={discountPercentage}
+          onChange={(e) => setDiscountPercentage(parseFloat(e.target.value))}
+        />
+        <Button variant="contained" color="primary" onClick={handleCalculatePrices}>
+          Calculate Price
+        </Button>
+      </div>
+
       <Carousel
         showDots
         arrows
@@ -92,66 +134,27 @@ const ProductDetail: React.FC = () => {
       >
         {product.images.map((image, index) => (
           <div className="carousel-image-wrapper" key={index}>
-            <img
-              src={image.src}
-              alt={`Product Image ${index + 1}`}
-              className="product-carousel-image"
-            />
+            <img src={image.src} alt={`Product Image ${index + 1}`} className="product-carousel-image" />
           </div>
         ))}
       </Carousel>
 
-      {/* Product Description - Full Content */}
       <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMore />}
-          aria-controls="description-content"
-          id="description-header"
-        >
-          <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-            Description
-          </Typography>
+        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="description-content" id="description-header">
+          <Typography variant="h6">Description</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography style={{ whiteSpace: 'pre-line', lineHeight: 1.5 }}>
-            {product.description}
-          </Typography>
+          <Typography style={{ whiteSpace: 'pre-line', lineHeight: 1.5 }}>{product.description}</Typography>
         </AccordionDetails>
       </Accordion>
-
-      {/* Blueprint and Print Provider IDs */}
-      <div className="product-meta">
-        <p>
-          <strong>Blueprint ID:</strong> {product.blueprint_id}
-        </p>
-        <p>
-          <strong>Print Provider ID:</strong> {product.print_provider_id}
-        </p>
-      </div>
 
       {/* Shipping Info */}
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMore />}
-          aria-controls="shipping-info-content"
-          id="shipping-info-header"
-        >
-          <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-            Shipping Info
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          {shippingInfo && shippingInfo.length > 0 ? (
-            <ShippingTable shippingInfo={shippingInfo} />
-          ) : (
-            <Typography>No shipping information available.</Typography>
-          )}
-        </AccordionDetails>
-      </Accordion>
+      <ShippingTable shippingInfo={shippingInfo || []} />
 
       {/* Variants Table */}
-      <h2>Variants</h2>
-      <VariantsTable product={product} />
+      <VariantsTable product={product} updatedPrices={updatedPrices} />
+
+      <div className="bottom-margin"></div>
     </div>
   );
 };

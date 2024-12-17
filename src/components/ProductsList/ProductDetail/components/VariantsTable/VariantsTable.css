@@ -1,35 +1,50 @@
+.variants-section {
+  margin: 20px 0;
+}
+
+.variants-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 .variants-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
-  }
-  
-  .variants-table th,
-  .variants-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .collapsible-row {
-    cursor: pointer;
-    background-color: #f5f5f5;
-  }
-  
-  .variant-row {
-    background-color: #f9f9f9;
-  }
-  
-  .color-display {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .color-circle {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-  }
-  
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  background-color: #f0f0f0; /* Slightly dark background */
+  font-weight: bold;
+}
+
+.summary-row {
+  background-color: #ffffff; /* White background */
+  cursor: pointer;
+}
+
+.child-row {
+  background-color: #f8f8f8; /* Slightly lighter background for children */
+}
+
+.arrow-cell {
+  text-align: center;
+  width: 40px;
+}
+
+.color-display {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.color-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+}
+
+tr:hover:not(.summary-row) {
+  background-color: #f1f1f1; /* Optional hover for children rows */
+}
