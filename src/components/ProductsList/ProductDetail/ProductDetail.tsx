@@ -6,13 +6,31 @@ import './ProductDetail.css';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import axios from 'axios';
-import { ArrowBack, ExpandMore } from '@mui/icons-material';
-import { Typography, TextField, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {
+  ArrowBack,
+  ExpandMore,
+} from '@mui/icons-material';
+import {
+  Typography,
+  TextField,
+  Button,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  MenuItem,
+  Select,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 import { ShippingProfile } from 'src/types';
 import ShippingTable from './components/ShippingTable/ShippingTable';
 import VariantsTable from './components/VariantsTable/VariantsTable';
 import { fetchSettings } from '../../../services/settingsService';
-import { calculateEtsyPrice } from '../../../services/pricingCalculatorService';
+import {
+  calculateEtsyPrice,
+  calculateEtsyPriceWithoutProfit,
+} from '../../../services/pricingCalculatorService';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,12 +39,17 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [shippingInfo, setShippingInfo] = useState<ShippingProfile[]>([]);
-  const [shippingError, setShippingError] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   // Configurable pricing values
   const [profitPercentage, setProfitPercentage] = useState<number>(10);
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
   const [updatedPrices, setUpdatedPrices] = useState<Record<string, number>>({});
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [smallestSizeName, setSmallestSizeName] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +67,18 @@ const ProductDetail: React.FC = () => {
           `${ENDPOINTS.SHIPPING_INFO(productRes.data.blueprint_id, productRes.data.print_provider_id)}`
         );
         setShippingInfo(response.data);
+
+        const smallestSize = productRes.data.options.find((o) => o.type === 'size')?.values[0];
+        if (smallestSize) {
+          setSmallestSizeName(smallestSize.title);
+
+          const enabledVariants = productRes.data.variants.filter(
+            (v) => v.options.includes(smallestSize.id) && v.is_enabled
+          );
+          if (enabledVariants.length > 0) {
+            setSelectedColor(enabledVariants[0].options[1]?.toString() || '');
+          }
+        }
       } catch (err) {
         setError('Failed to fetch data');
       } finally {
@@ -65,26 +100,98 @@ const ProductDetail: React.FC = () => {
 
     const prices: Record<string, number> = {};
 
-    product.variants.forEach((variant) => {
-      const productionCost = variant.cost / 100;
+    const groupBySize: Record<string, typeof product.variants> = product.variants
+      .filter((v) => v.is_enabled)
+      .reduce((acc, variant) => {
+        const sizeId = variant.options[0].toString();
+        if (!acc[sizeId]) acc[sizeId] = [];
+        acc[sizeId].push(variant);
+        return acc;
+      }, {} as Record<string, typeof product.variants>);
 
-      const { finalPrice } = calculateEtsyPrice(
-        productionCost,
-        profitPercentage,
-        discountPercentage,
-        false, // runAds
-        true, // freeShipping
-        usShippingCost / 100
-      );
+    Object.values(groupBySize).forEach((variants) => {
+      let maxPrice = 0;
+      variants.forEach((variant) => {
+        const productionCost = variant.cost / 100;
+        const { finalPrice } = calculateEtsyPrice(
+          productionCost,
+          profitPercentage,
+          discountPercentage,
+          false,
+          true,
+          usShippingCost / 100
+        );
+        prices[variant.id] = finalPrice;
+        if (finalPrice > maxPrice) maxPrice = finalPrice;
+      });
 
-      prices[variant.id] = finalPrice;
+      variants.forEach((variant) => (prices[variant.id] = maxPrice));
     });
+
+    if (selectedColor) {
+      const selectedVariant = product.variants.find(
+        (v) => v.options[1]?.toString() === selectedColor
+      );
+      if (selectedVariant) {
+        const productionCost = selectedVariant.cost / 100;
+        const { finalPrice } = calculateEtsyPriceWithoutProfit(
+          productionCost,
+          discountPercentage,
+          false,
+          true,
+          usShippingCost / 100
+        );
+        prices[selectedVariant.id] = finalPrice;
+      }
+    }
 
     setUpdatedPrices(prices);
   };
 
+  const handleSavePricesToPrintify = async () => {
+    if (!product) return;
+  
+    try {
+      setIsUpdating(true); // Show the blocking loader
+  
+      const updatedVariants = product.variants.map((variant) => {
+        if (variant.is_enabled && updatedPrices[variant.id] && updatedPrices[variant.id] !== variant.price / 100) {
+          return {
+            ...variant,
+            price: Math.round(updatedPrices[variant.id] * 100),
+          };
+        }
+        return variant;
+      });
+  
+      await axios.put(`${ENDPOINTS.PRODUCT_DETAILS(product.id)}`, { variants: updatedVariants });
+  
+      // Show success toast
+      setSnackbarMessage('Prices updated successfully on Printify!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Error updating prices on Printify:', error);
+  
+      // Show error toast
+      setSnackbarMessage('Failed to update prices. Please try again.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    } finally {
+      setIsUpdating(false); // Hide the loader
+    }
+  };  
+
   if (loading) return <div className="loader"></div>;
   if (error) return <div>Error: {error}</div>;
+
+  const smallestSizeId = product?.options
+    .find((o) => o.type === 'size')
+    ?.values[0]?.id;
+
+  const enabledVariantsForSmallestSize = product?.variants.filter(
+    (v) => smallestSizeId !== undefined && v.options.includes(smallestSizeId) && v.is_enabled
+  );
 
   return (
     <div className="product-detail">
@@ -95,6 +202,7 @@ const ProductDetail: React.FC = () => {
 
       <h1 className="product-title">{product?.title}</h1>
 
+      {/* Carousel */}
       <Carousel
         showDots
         arrows
@@ -114,12 +222,15 @@ const ProductDetail: React.FC = () => {
         ))}
       </Carousel>
 
+      {/* Description Accordion */}
       <Accordion>
-        <AccordionSummary expandIcon={<ExpandMore />} aria-controls="description-content" id="description-header">
+        <AccordionSummary expandIcon={<ExpandMore />}>
           <Typography variant="h6">Description</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography style={{ whiteSpace: 'pre-line', lineHeight: 1.5 }}>{product?.description}</Typography>
+          <Typography style={{ whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+            {product?.description}
+          </Typography>
         </AccordionDetails>
       </Accordion>
 
@@ -128,9 +239,11 @@ const ProductDetail: React.FC = () => {
 
       {/* Pricing Configuration */}
       <div className="pricing-configurations">
-        <Typography variant="h6" className="config-title"
-          sx={{ marginBottom: '20px', marginTop: '40px' }}>
+        <Typography variant="h6" className="config-title">
           Pricing Configuration
+        </Typography>
+        <Typography variant="subtitle1">
+          Select no profit variant for size {smallestSizeName}
         </Typography>
         <div className="config-inputs">
           <TextField
@@ -140,7 +253,6 @@ const ProductDetail: React.FC = () => {
             value={profitPercentage}
             onChange={(e) => setProfitPercentage(Number(e.target.value))}
             size="small"
-            style={{ marginRight: '10px' }}
           />
           <TextField
             label="Discount Percentage"
@@ -149,8 +261,23 @@ const ProductDetail: React.FC = () => {
             value={discountPercentage}
             onChange={(e) => setDiscountPercentage(Number(e.target.value))}
             size="small"
-            style={{ marginRight: '10px' }}
           />
+          <Select
+            value={selectedColor}
+            onChange={(e) => setSelectedColor(e.target.value as string)}
+            size="small"
+          >
+            {enabledVariantsForSmallestSize?.map((variant) => {
+              const colorTitle = product?.options
+                .find((o) => o.type === 'color')
+                ?.values.find((c) => c.id === variant.options[1])?.title;
+              return (
+                <MenuItem key={variant.id} value={variant.options[1]?.toString()}>
+                  {colorTitle || 'Unknown Color'}
+                </MenuItem>
+              );
+            })}
+          </Select>
           <Button variant="contained" color="primary" onClick={handleCalculatePrices}>
             Calculate Price
           </Button>
@@ -160,7 +287,45 @@ const ProductDetail: React.FC = () => {
       {/* Variants Table */}
       <VariantsTable product={product!} updatedPrices={updatedPrices} />
 
-      <div className="bottom-margin"></div>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleSavePricesToPrintify}
+        style={{ marginTop: '20px' }}
+      >
+        Save Prices to Printify
+      </Button>
+
+      {isUpdating && (
+        <div className="blocking-overlay">
+          <div className="loader-content">
+            <CircularProgress size={60} />
+            <Typography variant="h6" style={{ marginTop: '20px' }}>
+              Updating Product on Printify
+            </Typography>
+          </div>
+        </div>
+      )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          elevation={6}
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+          <div className="snackbar-progress">
+            <div className="snackbar-progress-bar"></div>
+          </div>
+        </Alert>
+      </Snackbar>
+
     </div>
   );
 };

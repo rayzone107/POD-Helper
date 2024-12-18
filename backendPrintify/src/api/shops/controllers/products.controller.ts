@@ -63,3 +63,42 @@ export const getShippingDetails = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch shipping details' });
   }
 };
+
+export const updateProductVariants = async (req: Request, res: Response) => {
+  const { productId } = req.params; // Product ID from URL params
+  const { variants } = req.body; // Updated variants from the request payload
+
+  if (!variants || !Array.isArray(variants)) {
+    return res.status(400).json({ error: 'Invalid request: variants are required' });
+  }
+
+  try {
+    // Prepare the payload to send to Printify
+    const payload = {
+      variants,
+    };
+
+    // Call Printify API to update the product
+    const response = await axios.put(
+      `${BASE_URL}products/${productId}.json`,
+      payload,
+      { headers: HEADERS }
+    );
+
+    // Respond with success message
+    res.json({
+      message: 'Product variants updated successfully',
+      data: response.data,
+    });
+  } catch (error: any) {
+    console.error(`Error updating product variants:`, error.message);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Status:', error.response.status);
+    }
+    res.status(500).json({
+      error: 'Failed to update product variants',
+      details: error.response?.data || error.message,
+    });
+  }
+};

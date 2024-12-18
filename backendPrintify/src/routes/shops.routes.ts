@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProductById, getProducts, getShippingDetails } from '../api/shops/controllers/products.controller';
+import { getProductById, getProducts, getShippingDetails, updateProductVariants } from '../api/shops/controllers/products.controller';
 
 const router = Router();
 
@@ -11,5 +11,7 @@ router.get('/products/:productId', getProductById);
 
 // Route for fetching shipping information for a provider
 router.get('/shipping/:blueprintId/:printProviderId', getShippingDetails);
+
+router.put('/products/:productId', updateProductVariants);
 
 export default router;
