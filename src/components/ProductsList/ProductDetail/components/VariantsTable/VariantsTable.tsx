@@ -12,31 +12,32 @@ const VariantsTable: React.FC<VariantsTableProps> = ({ product, updatedPrices })
   const { sizeMap, colorMap } = mapOptions(product);
   const [expandedSize, setExpandedSize] = useState<number | null>(null);
 
-  // Group variants by size, only including enabled variants
+  // Group enabled variants by size
   const groupBySize = product.variants
     .filter((variant) => variant.is_enabled) // Only include enabled variants
     .reduce((acc, variant) => {
-      const sizeId = variant.options[0];
+      const sizeId = variant.options.find((id) => sizeMap[id]);
+      if (!sizeId) return acc; // Skip if sizeId is not found
       if (!acc[sizeId]) acc[sizeId] = [];
       acc[sizeId].push(variant);
       return acc;
     }, {} as Record<number, typeof product.variants>);
 
-    const calculateRange = (variants: typeof product.variants, field: 'cost' | 'price' | 'updatedPrice') => {
-      const values = variants.map((v) => {
-        if (field === 'updatedPrice') {
-          return updatedPrices[v.id] || 0; // No division required here
-        }
-        return v[field] / 100; // Divide only for cost and price
-      });
-    
-      const min = Math.min(...values).toFixed(2);
-      const max = Math.max(...values).toFixed(2);
-    
-      // If min and max are the same, return a single value
-      return min === max ? `${min}` : `${min} - ${max}`;
-    };
-    
+  const calculateRange = (variants: typeof product.variants, field: 'cost' | 'price' | 'updatedPrice') => {
+    const values = variants.map((v) => {
+      if (field === 'updatedPrice') {
+        return updatedPrices[v.id] || 0;
+      }
+      return v[field] / 100;
+    });
+
+    const min = Math.min(...values).toFixed(2);
+    const max = Math.max(...values).toFixed(2);
+
+    // If min and max are the same, return a single value
+    return min === max ? `${min}` : `${min} - ${max}`;
+  };
+
   return (
     <div className="variants-section">
       <h2 className="variants-title">Variants</h2>
@@ -78,8 +79,10 @@ const VariantsTable: React.FC<VariantsTableProps> = ({ product, updatedPrices })
                 {/* Expanded Rows for Variants */}
                 {expandedSize === Number(sizeId) &&
                   variants.map((variant) => {
-                    const colorId = variant.options[1];
-                    const color = colorMap[colorId] || { title: 'Unknown', code: '#ccc' };
+                    const color = colorMap[variant.options.find((id) => colorMap[id]) || -1] || {
+                      title: 'Unknown',
+                      code: '#ccc',
+                    };
 
                     return (
                       <tr key={variant.id} className="child-row">
