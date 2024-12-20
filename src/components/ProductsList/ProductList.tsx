@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import ProductListItem from './ProductListItem/ProductListItem';
 import SearchBar from '../common/SearchBar/SearchBar';
 import { Product } from 'shared/types/Product';
 import './ProductList.css';
-import { ENDPOINTS } from '../../utils/endpoints/endpoints';
+import { fetchProducts, filterProducts } from 'src/services/productList';
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const loadProducts = async () => {
       try {
-        const response = await axios.get<{ products: Product[] }>(ENDPOINTS.PRODUCTS);
-        setProducts(response.data.products);
+        const fetchedProducts = await fetchProducts();
+        setProducts(fetchedProducts);
+        setFilteredProducts(fetchedProducts);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch products.');
@@ -24,24 +25,27 @@ const ProductList: React.FC = () => {
       }
     };
 
-    fetchProducts();
+    loadProducts();
   }, []);
 
+  useEffect(() => {
+    setFilteredProducts(filterProducts(products, searchTerm));
+  }, [products, searchTerm]);
+
   const handleSearch = (term: string) => {
-    const lowerCaseTerm = term.toLowerCase();
-    const filtered = products.filter((product) =>
-      product.title.toLowerCase().includes(lowerCaseTerm)
-    );
-    setFilteredProducts(filtered);
+    setSearchTerm(term);
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="product-list">
       <h1>Products</h1>
-      <SearchBar 
-        onSearch={handleSearch} 
-        placeholder="Search products by title..." 
-        debounceDelay={500} 
+      <SearchBar
+        onSearch={handleSearch}
+        placeholder="Search products by title..."
+        debounceDelay={500}
       />
       {loading ? (
         <div className="loader"></div>

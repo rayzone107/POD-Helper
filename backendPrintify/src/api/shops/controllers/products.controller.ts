@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
-import { BASE_URL, PRINTIFY_ACCESS_TOKEN } from '../../../config/config';
+import { BASE_URL, PAT } from '../../../config/config';
 import { Product } from 'shared/types/Product';
 import { ShippingDetailsResponse } from '../types/shops.types';
 
 const HEADERS = {
-  Authorization: `Bearer ${PRINTIFY_ACCESS_TOKEN}`,
+  Authorization: `Bearer ${PAT}`,
 };
 
 export const getProducts = async (req: Request, res: Response) => {
@@ -46,7 +46,7 @@ export const getShippingDetails = async (req: Request, res: Response) => {
       `https://api.printify.com/v1/catalog/blueprints/${blueprintId}/print_providers/${printProviderId}/shipping.json`,
       {
         headers: {
-          Authorization: `Bearer ${PRINTIFY_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${PAT}`,
         },
       }
     );
